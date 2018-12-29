@@ -30,11 +30,16 @@ public class RootLayoutController {
 
     @FXML
     private void handleClose() {
+        this.app.setClearToClose(true);
         // TO DO
         // Client should send a message to server that it is closing
         // Client should automatically log out
         // Server should end client's thread
-        this.app.getPrimaryStage().close();
+        this.app.closeConnection();
+
+        if(app.getClearToClose()) {
+            this.app.getPrimaryStage().close();
+        }
     }
 
     public void setVisible() {
