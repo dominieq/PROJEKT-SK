@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.TextFlow?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="890.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.view.ApplicationLayoutController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="870.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.view.ApplicationLayoutController">
    <tabs>
       <Tab text="Your subscriptions">
         <content>
@@ -62,7 +62,7 @@
                         <Font size="30.0" />
                      </font>
                   </Label>
-                  <Label fx:id="commentWarningLabel" layoutX="440.0" layoutY="811.0" text="You have zero subscriptions. Choose your subscriptions." textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="790.0" />
+                  <Label fx:id="commentWarningLabel" layoutX="440.0" layoutY="811.0" text="You have zero subscriptions. Choose your subscriptions." textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0" />
                </children>
             </AnchorPane>
         </content>
@@ -81,24 +81,24 @@
                         <Font size="30.0" />
                      </font>
                   </Label>
-                  <ChoiceBox fx:id="userTagChoiceBox" layoutX="117.0" layoutY="116.0" prefWidth="150.0" AnchorPane.bottomAnchor="630.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="590.0" AnchorPane.topAnchor="190.0" />
-                  <TextField fx:id="userTitleTextField" layoutX="180.0" layoutY="290.0" promptText="Your title" AnchorPane.bottomAnchor="530.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="590.0" AnchorPane.topAnchor="290.0">
+                  <ChoiceBox fx:id="userTagChoiceBox" layoutX="117.0" layoutY="116.0" prefWidth="150.0" AnchorPane.bottomAnchor="590.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="660.0" AnchorPane.topAnchor="190.0" />
+                  <TextField fx:id="userTitleTextField" layoutX="180.0" layoutY="290.0" promptText="Your title" AnchorPane.bottomAnchor="490.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="660.0" AnchorPane.topAnchor="290.0">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </TextField>
-                  <Label layoutX="105.0" layoutY="201.0" text="Choose your tag:" AnchorPane.bottomAnchor="630.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="860.0" AnchorPane.topAnchor="190.0">
+                  <Label layoutX="105.0" layoutY="201.0" text="Choose your tag:" AnchorPane.bottomAnchor="590.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="950.0" AnchorPane.topAnchor="190.0">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label layoutX="105.0" layoutY="290.0" text="Write your title:" AnchorPane.bottomAnchor="530.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="860.0" AnchorPane.topAnchor="290.0">
+                  <Label layoutX="105.0" layoutY="290.0" text="Write your title:" AnchorPane.bottomAnchor="490.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="950.0" AnchorPane.topAnchor="290.0">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label fx:id="userWarningLabel" layoutX="492.0" layoutY="800.0" text="You have zero subscriptions. Choose your subscriptions." textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="790.0" />
-                  <Button layoutX="229.0" layoutY="416.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="590.0" AnchorPane.topAnchor="730.0">
+                  <Label fx:id="userWarningLabel" layoutX="492.0" layoutY="800.0" text="You have zero subscriptions. Choose your subscriptions." textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0" />
+                  <Button layoutX="229.0" layoutY="416.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="660.0" AnchorPane.topAnchor="690.0">
                      <font>
                         <Font size="20.0" />
                      </font>

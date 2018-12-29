@@ -7,18 +7,33 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="890.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.view.LogInLayoutController">
+<AnchorPane prefHeight="870.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.view.LogInLayoutController">
    <children>
       <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="514.0" layoutY="44.0" text="Information text" textAlignment="CENTER" AnchorPane.bottomAnchor="700.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="25.0">
          <font>
             <Font size="50.0" />
          </font>
       </Label>
-      <TextField fx:id="nickTextField" layoutX="261.0" layoutY="230.0" promptText="Nick" AnchorPane.bottomAnchor="600.0" AnchorPane.leftAnchor="560.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="260.0" />
-      <PasswordField fx:id="passwordField" layoutX="261.0" layoutY="325.0" promptText="Password" AnchorPane.bottomAnchor="500.0" AnchorPane.leftAnchor="560.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="360.0" />
-      <Label alignment="CENTER_RIGHT" layoutX="325.0" layoutY="267.0" text="Your nick:" AnchorPane.bottomAnchor="600.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="560.0" AnchorPane.topAnchor="260.0" />
-      <Label alignment="CENTER_RIGHT" layoutX="325.0" layoutY="367.0" text="Your password:" AnchorPane.bottomAnchor="500.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="560.0" AnchorPane.topAnchor="360.0" />
-      <Label fx:id="warningLabel" layoutX="514.0" layoutY="562.0" text="Warning text" visible="false" AnchorPane.bottomAnchor="330.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="530.0" />
-      <Button layoutX="519.0" layoutY="684.0" mnemonicParsing="false" onAction="#handleAccept" text="Accept" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="660.0" />
+      <TextField fx:id="nickTextField" layoutX="261.0" layoutY="230.0" promptText="Nick" AnchorPane.bottomAnchor="560.0" AnchorPane.leftAnchor="660.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="260.0">
+         <font>
+            <Font size="20.0" />
+         </font></TextField>
+      <PasswordField fx:id="passwordField" layoutX="261.0" layoutY="325.0" promptText="Password" AnchorPane.bottomAnchor="460.0" AnchorPane.leftAnchor="660.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="360.0">
+         <font>
+            <Font size="20.0" />
+         </font></PasswordField>
+      <Label alignment="CENTER_RIGHT" layoutX="325.0" layoutY="267.0" text="Your nick:" AnchorPane.bottomAnchor="560.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="560.0" AnchorPane.topAnchor="260.0">
+         <font>
+            <Font size="30.0" />
+         </font></Label>
+      <Label alignment="CENTER_RIGHT" layoutX="325.0" layoutY="367.0" text="Your password:" AnchorPane.bottomAnchor="460.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="560.0" AnchorPane.topAnchor="360.0">
+         <font>
+            <Font size="30.0" />
+         </font></Label>
+      <Label fx:id="warningLabel" layoutX="514.0" layoutY="562.0" text="Warning text" textFill="RED" visible="false" AnchorPane.bottomAnchor="260.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="560.0" />
+      <Button layoutX="519.0" layoutY="684.0" mnemonicParsing="false" onAction="#handleAccept" text="Accept" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="660.0">
+         <font>
+            <Font size="30.0" />
+         </font></Button>
    </children>
 </AnchorPane>
