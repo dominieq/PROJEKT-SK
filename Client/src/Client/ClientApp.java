@@ -34,6 +34,7 @@ public class ClientApp extends Application {
             RootLayoutController controller = loader.getController();
             controller.setClientApp(this);
 
+            primaryStage.show();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
