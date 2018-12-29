@@ -3,8 +3,8 @@ package Client.view;
 import Client.ClientApp;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
-
-import java.awt.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 public class LogInLayoutController {
 
@@ -27,21 +27,22 @@ public class LogInLayoutController {
         // TO DO
         // Show registration label or login label
         // Action based on information from server
+        this.titleLabel.setText("Log In/Register");
     }
 
     @FXML
     private void handleAccept() {
+        String nick = this.nickTextField.getText();
+        String pass = this.passwordField.getText();
+
         // TO DO
-        // Get information from two text fields
-        // And send to server, wait for response and choose proper action
+        // send information to server, wait for response and choose proper action
+
+        this.app.showApplicationLayout();
     }
 
     public LogInLayoutController() {
 
-    }
-
-    public ClientApp getApp() {
-        return app;
     }
 
     public void setApp(ClientApp app) {

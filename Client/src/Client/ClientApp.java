@@ -1,9 +1,14 @@
 package Client;
 
+import Client.view.ApplicationLayoutController;
+import Client.view.LogInLayoutController;
 import Client.view.RootLayoutController;
+import Client.view.WelcomePageLayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -13,6 +18,7 @@ public class ClientApp extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private RootLayoutController rootLayoutController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -20,6 +26,8 @@ public class ClientApp extends Application {
         primaryStage.setTitle("Publish/Subscribe Project");
 
         initRootLayout();
+
+        showWelcomePageLayout();
     }
 
     public void initRootLayout() {
@@ -31,24 +39,58 @@ public class ClientApp extends Application {
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
 
-            RootLayoutController controller = loader.getController();
-            controller.setClientApp(this);
+            rootLayoutController = loader.getController();
+            rootLayoutController.setClientApp(this);
 
+            primaryStage.show();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
     }
 
-    public void showMainPageLayout() {
-        // TO DO
+    public void showWelcomePageLayout() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ClientApp.class.getResource("view/WelcomePageLayout.fxml"));
+            AnchorPane layout = (AnchorPane) loader.load();
+
+            rootLayout.setCenter(layout);
+
+            WelcomePageLayoutController controller = loader.getController();
+            controller.setApp(this);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public void showLogInLayout() {
-        // TO DO
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ClientApp.class.getResource("view/LogInLayout.fxml"));
+            AnchorPane layout = (AnchorPane) loader.load();
+
+            rootLayout.setCenter(layout);
+
+            LogInLayoutController controller = loader.getController();
+            controller.setApp(this);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public void showApplicationLayout() {
-        // TO DO
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ClientApp.class.getResource("view/ApplicationLayout.fxml"));
+            TabPane layout = (TabPane) loader.load();
+
+            rootLayout.setCenter(layout);
+
+            ApplicationLayoutController controller = loader.getController();
+            controller.setApp(this);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     public ClientApp() {
@@ -62,15 +104,7 @@ public class ClientApp extends Application {
         return primaryStage;
     }
 
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-    }
-
-    public BorderPane getRootLayout() {
-        return rootLayout;
-    }
-
-    public void setRootLayout(BorderPane rootLayout) {
-        this.rootLayout = rootLayout;
+    public RootLayoutController getRootLayoutController() {
+        return rootLayoutController;
     }
 }
