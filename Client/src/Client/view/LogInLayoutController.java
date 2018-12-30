@@ -22,30 +22,51 @@ public class LogInLayoutController {
     @FXML
     private PasswordField passwordField;
 
+    /**
+     * Empty fxml initialize method
+     */
     @FXML
     private void initialize() {
-        // TO DO
-        // Show registration label or login label
-        // Action based on information from server
-        this.titleLabel.setText("Log In/Register");
+
     }
 
+    // TO DO Javadoc
     @FXML
     private void handleAccept() {
         String nick = this.nickTextField.getText();
         String pass = this.passwordField.getText();
+        String msg = nick + ";" + pass + ";END";
+        this.app.sendMessage(msg);
 
         // TO DO
-        // send information to server, wait for response and choose proper action
+        // wait for response and choose proper action
 
         this.app.showApplicationLayout();
     }
 
+    /**
+     * Empty class constructor
+     */
     public LogInLayoutController() {
 
     }
 
+    /**
+     * Sets app. It will allow controller to have access to functions in ClientApp
+     * @param app current ClientApp object
+     */
     public void setApp(ClientApp app) {
         this.app = app;
+    }
+
+    // TO DO Javadoc
+    public void setUp() {
+        System.out.println("Setting up LogIn page...");
+        String ans = this.app.receiveMessage();
+        System.out.println("Received message: " + ans);
+        if(ans.contains("old")) this.titleLabel.setText("Log In");
+        else if (ans.contains("new")) this.titleLabel.setText("Register");
+        else this.titleLabel.setText("DISPLAY_ERROR: Log In/Register");
+        System.out.println("LogIn page set up.");
     }
 }

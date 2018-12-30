@@ -31,7 +31,7 @@
             <Font size="30.0" />
          </font></Label>
       <Label fx:id="warningLabel" layoutX="514.0" layoutY="562.0" text="Warning text" textFill="RED" visible="false" AnchorPane.bottomAnchor="260.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="560.0" />
-      <Button layoutX="519.0" layoutY="684.0" mnemonicParsing="false" onAction="#handleAccept" text="Accept" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="660.0">
+      <Button alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="519.0" layoutY="684.0" mnemonicParsing="false" onAction="#handleAccept" text="Accept" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="660.0">
          <font>
             <Font size="30.0" />
          </font></Button>

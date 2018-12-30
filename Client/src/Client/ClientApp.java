@@ -4,7 +4,6 @@ import Client.view.ApplicationLayoutController;
 import Client.view.LogInLayoutController;
 import Client.view.RootLayoutController;
 import Client.view.WelcomePageLayoutController;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,6 +15,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.Optional;
 
@@ -77,6 +79,7 @@ public class ClientApp extends Application {
 
             WelcomePageLayoutController controller = loader.getController();
             controller.setApp(this);
+            controller.setUp();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -92,6 +95,7 @@ public class ClientApp extends Application {
 
             LogInLayoutController controller = loader.getController();
             controller.setApp(this);
+            controller.setUp();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -156,12 +160,40 @@ public class ClientApp extends Application {
         }
     }
 
+    public String receiveMessage() {
+        String msg = "ERROR";
+        byte[] buffer = new byte[5000];
+        try {
+            InputStream is = clientSocket.getInputStream();
+            is.read(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            msg = new String(buffer, "UTF-8");
+            String[] parts = msg.split("END");
+            msg = parts[0] + "END";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
+    public void sendMessage(String msg) {
+        try {
+            OutputStream os = this.clientSocket.getOutputStream();
+            os.write(msg.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void closeConnection() {
-        connectionControl = true;
+        this.connectionControl = true;
         while(connectionControl) {
             try {
-                clientSocket.close();
-                connectionControl = false;
+                this.clientSocket.close();
+                this.connectionControl = false;
             } catch (IOException exception) {
                 showUnableToDisconnect();
             }
