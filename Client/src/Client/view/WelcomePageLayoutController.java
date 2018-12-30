@@ -20,7 +20,7 @@ public class WelcomePageLayoutController {
      */
     @FXML
     private void handleLogIn () {
-        String msg = "old;END";
+        String msg = "JOIN;old;END";
         this.app.sendMessage(msg);
         this.app.showLogInLayout();
     }
@@ -30,7 +30,7 @@ public class WelcomePageLayoutController {
      */
     @FXML
     private void handleRegister () {
-        String msg = "new;END";
+        String msg = "JOIN;new;END";
         this.app.sendMessage(msg);
         this.app.showLogInLayout();
     }
@@ -48,11 +48,10 @@ public class WelcomePageLayoutController {
      */
     public void setApp(ClientApp app) {
         this.app = app;
-
     }
 
     /**
-     * Sets log out MenuItem and SeparatorMenuItem to invisible. We won't need that option in current windowt
+     * Sets log out MenuItem and SeparatorMenuItem to invisible. We won't need that option in current window
      */
     public void setUp() {
         this.app.getRootLayoutController().setInvisible();

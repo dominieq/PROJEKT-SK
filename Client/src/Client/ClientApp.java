@@ -26,20 +26,21 @@ public class ClientApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private RootLayoutController rootLayoutController;
-    private Socket clientSocket;
-    private Boolean connectionControl;
+    private volatile Socket clientSocket;
+    private String msg;
+    private volatile String ans;
+    private Boolean actionControl;
     private Boolean clearToClose;
 
-    @Override
-    public void start(Stage primaryStage) {
-        connectionControl =  true;
+    @Override public void start(Stage primaryStage) {
+        this.actionControl =  true;
 
-        while (connectionControl) {
+        while (actionControl) {
             try {
-                clientSocket = new Socket("localhost", 1234);
-                connectionControl = false;
+                this.clientSocket = new Socket("localhost", 1234);
+                this.actionControl = false;
             } catch (IOException e) {
-                showUnableToConnect();
+                showConnectionError("connect to");
             }
         }
 
@@ -57,11 +58,11 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/RootLayout.fxml"));
             this.rootLayout = (BorderPane) loader.load();
 
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
+            Scene scene = new Scene(this.rootLayout);
+            this.primaryStage.setScene(scene);
 
-            rootLayoutController = loader.getController();
-            rootLayoutController.setClientApp(this);
+            this.rootLayoutController = loader.getController();
+            this.rootLayoutController.setClientApp(this);
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -75,7 +76,7 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/WelcomePageLayout.fxml"));
             AnchorPane layout = (AnchorPane) loader.load();
 
-            rootLayout.setCenter(layout);
+            this.rootLayout.setCenter(layout);
 
             WelcomePageLayoutController controller = loader.getController();
             controller.setApp(this);
@@ -91,7 +92,7 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/LogInLayout.fxml"));
             AnchorPane layout = (AnchorPane) loader.load();
 
-            rootLayout.setCenter(layout);
+            this.rootLayout.setCenter(layout);
 
             LogInLayoutController controller = loader.getController();
             controller.setApp(this);
@@ -107,19 +108,28 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/ApplicationLayout.fxml"));
             TabPane layout = (TabPane) loader.load();
 
-            rootLayout.setCenter(layout);
+            this.rootLayout.setCenter(layout);
 
             ApplicationLayoutController controller = loader.getController();
             controller.setApp(this);
+            controller.setUp();
+            /*Start ApplicationLayoutController thread*/
+            Thread appThread = new Thread(controller);
+            appThread.start();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
     }
 
-    private void showUnableToConnect() {
+    /**
+     * Displays error alert. Gives two options. First to try again which will make no changes.
+     * Second to exit anyway which will cause the application to exit with status 1.
+     * If no option was chosen then the the application will exit with status 1
+     */
+    private void showConnectionError(String action) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Unable to connect to server");
-        alert.setHeaderText("You are unable to connect to server");
+        alert.setTitle("Unable to " + action + " server");
+        alert.setHeaderText("You were unable to " + action + " server");
 
         ButtonType buttonTryAgain = new ButtonType("Try Again");
         ButtonType buttonExit = new ButtonType("Exit");
@@ -129,44 +139,45 @@ public class ClientApp extends Application {
 
         Optional<ButtonType> option = alert.showAndWait();
 
-        if (option.get() == null) {
-            System.exit(1);
-        }
-        else if (option.get() == buttonExit) {
+        if (option.get() == null || option.get() == buttonExit) {
             System.exit(1);
         }
     }
 
-    private void showUnableToDisconnect() {
+    public void showLogOutError() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Unable to disconnect to server");
-        alert.setHeaderText("You were unable to disconnect from server");
+        alert.setTitle("Unable to log out from server");
+        alert.setHeaderText("You were unable to log out from server");
 
         ButtonType buttonTryAgain = new ButtonType("Try Again");
         ButtonType buttonGoBack = new ButtonType("Go Back");
-        ButtonType buttonExitAnyway = new ButtonType("Exit Anyway");
+        ButtonType buttonExit = new ButtonType("Exit Anyway");
 
         alert.getButtonTypes().clear();
-        alert.getButtonTypes().addAll(buttonTryAgain, buttonGoBack, buttonExitAnyway);
+        alert.getButtonTypes().addAll(buttonTryAgain, buttonGoBack, buttonExit);
 
         Optional<ButtonType> option = alert.showAndWait();
 
-        if (option.get() == null || option.get() == buttonGoBack) {
-            this.clearToClose = false;
-            this.connectionControl = false;
+        if (option.get() == null || option.get() == buttonExit) {
+            this.clearToClose = true;
+            this.actionControl = false;
         }
-        else if (option.get() == buttonExitAnyway) {
-            System.exit(1);
+        else if (option.get() == buttonGoBack) {
+            this.clearToClose = false;
+            this.actionControl = false;
         }
     }
 
-    public String receiveMessage() {
+
+    public synchronized String receiveMessage() {
         String msg = "ERROR";
         byte[] buffer = new byte[5000];
         try {
-            InputStream is = clientSocket.getInputStream();
+            InputStream is = this.clientSocket.getInputStream();
             is.read(buffer);
         } catch (IOException e) {
+            // TO DO
+            // Function should display alert
             e.printStackTrace();
         }
         try {
@@ -175,6 +186,8 @@ public class ClientApp extends Application {
             msg = parts[0] + "END";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            // TO DO
+            // Function should display alert
         }
         return msg;
     }
@@ -184,18 +197,20 @@ public class ClientApp extends Application {
             OutputStream os = this.clientSocket.getOutputStream();
             os.write(msg.getBytes());
         } catch (IOException e) {
+            // TO DO
+            // Function should display alert
             e.printStackTrace();
         }
     }
 
     public void closeConnection() {
-        this.connectionControl = true;
-        while(connectionControl) {
+        this.actionControl = true;
+        while(actionControl) {
             try {
                 this.clientSocket.close();
-                this.connectionControl = false;
+                this.actionControl = false;
             } catch (IOException exception) {
-                showUnableToDisconnect();
+                showConnectionError("disconnect from");
             }
         }
     }
@@ -215,6 +230,14 @@ public class ClientApp extends Application {
         return rootLayoutController;
     }
 
+    public Boolean getActionControl() {
+        return actionControl;
+    }
+
+    public void setActionControl(Boolean actionControl) {
+        this.actionControl = actionControl;
+    }
+
     public Boolean getClearToClose() {
         return clearToClose;
     }
@@ -222,4 +245,21 @@ public class ClientApp extends Application {
     public void setClearToClose(Boolean clearToClose) {
         this.clearToClose = clearToClose;
     }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public String getAns() {
+        return ans;
+    }
+
+    public void setAns(String ans) {
+        this.ans = ans;
+    }
+
 }
