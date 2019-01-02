@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Optional;
 
 public class ClientApp extends Application {
@@ -26,20 +27,22 @@ public class ClientApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private RootLayoutController rootLayoutController;
-    private Socket clientSocket;
-    private Boolean connectionControl;
-    private Boolean clearToClose;
+    private ApplicationLayoutController applicationLayoutController;
+    private Thread appThread;
+    private volatile Socket clientSocket;
+    private Boolean loopControlBoolean;
+    private Boolean clearToCloseBoolean;
 
-    @Override
-    public void start(Stage primaryStage) {
-        connectionControl =  true;
+    @Override public void start(Stage primaryStage) {
+        this.loopControlBoolean =  true;
 
-        while (connectionControl) {
+        while (loopControlBoolean) {
             try {
-                clientSocket = new Socket("localhost", 1234);
-                connectionControl = false;
+                this.clientSocket = new Socket("localhost", 1234);
+                this.clientSocket.setSoTimeout(5000);
+                this.loopControlBoolean = false;
             } catch (IOException e) {
-                showUnableToConnect();
+                showConnectionError("connect to");
             }
         }
 
@@ -57,11 +60,13 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/RootLayout.fxml"));
             this.rootLayout = (BorderPane) loader.load();
 
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
+            Scene scene = new Scene(this.rootLayout);
+            this.primaryStage.setScene(scene);
 
-            rootLayoutController = loader.getController();
-            rootLayoutController.setClientApp(this);
+            this.rootLayoutController = loader.getController();
+            this.rootLayoutController.setClientApp(this);
+
+            this.clearToCloseBoolean = true;
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -75,7 +80,7 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/WelcomePageLayout.fxml"));
             AnchorPane layout = (AnchorPane) loader.load();
 
-            rootLayout.setCenter(layout);
+            this.rootLayout.setCenter(layout);
 
             WelcomePageLayoutController controller = loader.getController();
             controller.setApp(this);
@@ -91,7 +96,7 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/LogInLayout.fxml"));
             AnchorPane layout = (AnchorPane) loader.load();
 
-            rootLayout.setCenter(layout);
+            this.rootLayout.setCenter(layout);
 
             LogInLayoutController controller = loader.getController();
             controller.setApp(this);
@@ -107,19 +112,28 @@ public class ClientApp extends Application {
             loader.setLocation(ClientApp.class.getResource("view/ApplicationLayout.fxml"));
             TabPane layout = (TabPane) loader.load();
 
-            rootLayout.setCenter(layout);
+            this.rootLayout.setCenter(layout);
 
-            ApplicationLayoutController controller = loader.getController();
-            controller.setApp(this);
+            this.applicationLayoutController = loader.getController();
+            this.applicationLayoutController.setApp(this);
+            this.applicationLayoutController.setUp();
+            /*Start ApplicationLayoutController thread*/
+            this.appThread = new Thread(this.applicationLayoutController);
+            this.appThread.start();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
     }
 
-    private void showUnableToConnect() {
+    /**
+     * Displays error alert. Gives two options. First to try again which will make no changes.
+     * Second to exit anyway which will cause the application to exit with status 1.
+     * If no option was chosen then the the application will exit with status 1
+     */
+    private void showConnectionError(String action) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Unable to connect to server");
-        alert.setHeaderText("You are unable to connect to server");
+        alert.setTitle("Unable to " + action + " server");
+        alert.setHeaderText("You were unable to " + action + " server");
 
         ButtonType buttonTryAgain = new ButtonType("Try Again");
         ButtonType buttonExit = new ButtonType("Exit");
@@ -129,73 +143,87 @@ public class ClientApp extends Application {
 
         Optional<ButtonType> option = alert.showAndWait();
 
-        if (option.get() == null) {
-            System.exit(1);
-        }
-        else if (option.get() == buttonExit) {
+        if (option.get() == null || option.get() == buttonExit) {
             System.exit(1);
         }
     }
 
-    private void showUnableToDisconnect() {
+    public void showLogOutError(String error) {
+        /* Set up alert features */
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Unable to disconnect to server");
-        alert.setHeaderText("You were unable to disconnect from server");
+        alert.setTitle("Unable to log out from server");
+        alert.setHeaderText(error);
 
         ButtonType buttonTryAgain = new ButtonType("Try Again");
         ButtonType buttonGoBack = new ButtonType("Go Back");
-        ButtonType buttonExitAnyway = new ButtonType("Exit Anyway");
+        ButtonType buttonExit = new ButtonType("Exit Anyway");
 
         alert.getButtonTypes().clear();
-        alert.getButtonTypes().addAll(buttonTryAgain, buttonGoBack, buttonExitAnyway);
+        alert.getButtonTypes().addAll(buttonTryAgain, buttonGoBack, buttonExit);
 
         Optional<ButtonType> option = alert.showAndWait();
 
-        if (option.get() == null || option.get() == buttonGoBack) {
-            this.clearToClose = false;
-            this.connectionControl = false;
+        /* Interpret user's choice */
+        if (option.get() == null || option.get() == buttonExit) {
+            this.loopControlBoolean = false;
         }
-        else if (option.get() == buttonExitAnyway) {
-            System.exit(1);
+        else if (option.get() == buttonGoBack) {
+            /* User wants to go back and continue working with application. */
+            this.clearToCloseBoolean = false;
+            this.loopControlBoolean = false;
         }
     }
 
-    public String receiveMessage() {
-        String msg = "ERROR";
+
+    public synchronized String receiveMessage() {
+        String msg;
         byte[] buffer = new byte[5000];
         try {
-            InputStream is = clientSocket.getInputStream();
+
+            InputStream is = this.clientSocket.getInputStream();
             is.read(buffer);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        } catch (IOException exception) {
+
+            if(exception instanceof SocketTimeoutException) {
+                return "TIMEOUT_ERROR";
+            }
+            else {
+                return "READ_ERROR";
+            }
+
         }
         try {
+
             msg = new String(buffer, "UTF-8");
             String[] parts = msg.split("END");
             msg = parts[0] + "END";
+
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            return "CONVERTING_ERROR";
         }
         return msg;
     }
 
-    public void sendMessage(String msg) {
+    public synchronized void sendMessage(String msg) {
         try {
             OutputStream os = this.clientSocket.getOutputStream();
             os.write(msg.getBytes());
         } catch (IOException e) {
+            // TO DO
+            // Function should display alert
             e.printStackTrace();
         }
     }
 
     public void closeConnection() {
-        this.connectionControl = true;
-        while(connectionControl) {
+        this.loopControlBoolean = true;
+        while(loopControlBoolean) {
             try {
                 this.clientSocket.close();
-                this.connectionControl = false;
+                this.loopControlBoolean = false;
             } catch (IOException exception) {
-                showUnableToDisconnect();
+                showConnectionError("disconnect from");
             }
         }
     }
@@ -215,11 +243,27 @@ public class ClientApp extends Application {
         return rootLayoutController;
     }
 
-    public Boolean getClearToClose() {
-        return clearToClose;
+    public ApplicationLayoutController getApplicationLayoutController() {
+        return applicationLayoutController;
     }
 
-    public void setClearToClose(Boolean clearToClose) {
-        this.clearToClose = clearToClose;
+    public Thread getAppThread() {
+        return appThread;
+    }
+
+    public Boolean getClearToCloseBoolean() {
+        return clearToCloseBoolean;
+    }
+
+    public void setClearToCloseBoolean(Boolean clearToCloseBoolean) {
+        this.clearToCloseBoolean = clearToCloseBoolean;
+    }
+
+    public Boolean getLoopControlBoolean() {
+        return loopControlBoolean;
+    }
+
+    public void setLoopControlBoolean(Boolean loopControlBoolean) {
+        this.loopControlBoolean = loopControlBoolean;
     }
 }

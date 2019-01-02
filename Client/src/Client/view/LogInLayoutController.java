@@ -6,42 +6,80 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+// TO DO Javadoc
 public class LogInLayoutController {
 
     private ClientApp app;
 
-    @FXML
-    private Label warningLabel;
+    @FXML private Label warningLabel;
 
-    @FXML
-    private Label titleLabel;
+    @FXML private Label titleLabel;
 
-    @FXML
-    private TextField nickTextField;
+    @FXML private TextField nickTextField;
 
-    @FXML
-    private PasswordField passwordField;
+    @FXML private PasswordField passwordField;
 
     /**
      * Empty fxml initialize method
      */
-    @FXML
-    private void initialize() {
+    @FXML private void initialize() {
 
     }
 
-    // TO DO Javadoc
-    @FXML
-    private void handleAccept() {
+    /**
+     * Collects nick from TextField and password from PasswordField.
+     * Creates message (String) that has structure:
+     *     "JOIN_NEW;<nick>;<pass>;END" for a new user that wants to register
+     *     "JOIN_OLD;<nick>;<pass>;END" for an old user that wants to log in
+     * Sends that that message to server and waits for answer.
+     * Answer from server has two forms:
+     *     "ACK_JOIN;END" which means that action had no errors and application can proceed
+     *     "ERR_JOIN;<error>;END" which that an error occurred. We are displaying that error
+     *     on warningLabel.
+     */
+    @FXML private void handleAccept() {
         String nick = this.nickTextField.getText();
         String pass = this.passwordField.getText();
-        String msg = nick + ";" + pass + ";END";
-        this.app.sendMessage(msg);
 
-        // TO DO
-        // wait for response and choose proper action
+        /*Send nick and password to server*/
+        if(this.titleLabel.getText() == "Register") {
+            this.app.sendMessage("JOIN_NEW;" + nick + ";" + pass + ";END");
+        }
+        else if(this.titleLabel.getText() == "Log In") {
+            this.app.sendMessage("JOIN_OLD;" + nick + ";" + pass + ";END");
+        }
+        else { ;
+            this.app.sendMessage("JOIN;" + nick + ";" + pass + ";END");
+        }
 
-        this.app.showApplicationLayout();
+        /*Receive information from server and interpret it*/
+        String ans = this.app.receiveMessage();
+        if(ans.startsWith("ACK_JOIN")) {
+            this.app.showApplicationLayout();
+        }
+        else if(ans.startsWith("ERR_JOIN")) {
+            String[] parts = ans.split(";");
+            this.warningLabel.setText(parts[1]);
+            this.warningLabel.setVisible(true);
+        }
+        else if(ans == "TIMEOUT_ERROR") {
+            // TEMPORARY CODE
+            this.app.showApplicationLayout();
+            // TO DO
+            // This should function should handle that error in other way
+        }
+        else if(ans == "READ_ERROR") {
+            // TEMPORARY CODE;
+            this.app.showApplicationLayout();
+            // TO DO
+            // This should function should handle that error in other way
+        }
+        else if(ans == "CONVERTING_ERROR") {
+            // TEMPORARY CODE
+            this.app.showApplicationLayout();
+            // TO DO
+            // This should function should handle that error in other way
+        }
     }
 
     /**
@@ -59,14 +97,19 @@ public class LogInLayoutController {
         this.app = app;
     }
 
-    // TO DO Javadoc
+    /**
+     * Receives message from server which has a following structure:
+     *     "ACK_JOIN;new;END" server will try to register new user
+     *     "ACK_JOIN;old;END" server will try to log in old user
+     * Function uses that information to display a proper title on current window
+     */
     public void setUp() {
-        System.out.println("Setting up LogIn page...");
         String ans = this.app.receiveMessage();
-        System.out.println("Received message: " + ans);
-        if(ans.contains("old")) this.titleLabel.setText("Log In");
-        else if (ans.contains("new")) this.titleLabel.setText("Register");
-        else this.titleLabel.setText("DISPLAY_ERROR: Log In/Register");
-        System.out.println("LogIn page set up.");
+        if(ans.contains("old")) {
+            this.titleLabel.setText("Log In");
+        }
+        else if (ans.contains("new")) {
+            this.titleLabel.setText("Register");
+        }
     }
 }

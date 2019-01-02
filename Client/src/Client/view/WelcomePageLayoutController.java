@@ -16,22 +16,20 @@ public class WelcomePageLayoutController {
     }
 
     /**
-     * Sends message 'old' to server that user wants to log in
+     * Sends message to server that user wants to log in
      */
     @FXML
     private void handleLogIn () {
-        String msg = "old;END";
-        this.app.sendMessage(msg);
+        this.app.sendMessage("JOIN;old;END");
         this.app.showLogInLayout();
     }
 
     /**
-     * Sends message 'new' to server that user wants to register
+     * Sends message to server that user wants to register
      */
     @FXML
     private void handleRegister () {
-        String msg = "new;END";
-        this.app.sendMessage(msg);
+        this.app.sendMessage("JOIN;new;END");
         this.app.showLogInLayout();
     }
 
@@ -48,11 +46,10 @@ public class WelcomePageLayoutController {
      */
     public void setApp(ClientApp app) {
         this.app = app;
-
     }
 
     /**
-     * Sets log out MenuItem and SeparatorMenuItem to invisible. We won't need that option in current windowt
+     * Sets log out MenuItem and SeparatorMenuItem to invisible. We won't need that option in current window
      */
     public void setUp() {
         this.app.getRootLayoutController().setInvisible();
