@@ -40,28 +40,45 @@ public class LogInLayoutController {
     @FXML private void handleAccept() {
         String nick = this.nickTextField.getText();
         String pass = this.passwordField.getText();
+
         /*Send nick and password to server*/
         if(this.titleLabel.getText() == "Register") {
-            this.app.setMsg("JOIN_NEW;" + nick + ";" + pass + ";END");
-            this.app.sendMessage(this.app.getMsg());
-            this.app.setMsg(null);
+            this.app.sendMessage("JOIN_NEW;" + nick + ";" + pass + ";END");
         }
         else if(this.titleLabel.getText() == "Log In") {
-            this.app.setMsg("JOIN_OLD;" + nick + ";" + pass + ";END");
-            this.app.sendMessage(this.app.getMsg());
-            this.app.setMsg(null);
+            this.app.sendMessage("JOIN_OLD;" + nick + ";" + pass + ";END");
         }
+        else { ;
+            this.app.sendMessage("JOIN;" + nick + ";" + pass + ";END");
+        }
+
         /*Receive information from server and interpret it*/
-        this.app.setAns(this.app.receiveMessage());
-        if(this.app.getAns().startsWith("ACK_JOIN")) {
-            this.app.setAns(null);
+        String ans = this.app.receiveMessage();
+        if(ans.startsWith("ACK_JOIN")) {
             this.app.showApplicationLayout();
         }
-        else if(this.app.getAns().startsWith("ERR_JOIN")) {
-            String[] parts = this.app.getAns().split(";");
+        else if(ans.startsWith("ERR_JOIN")) {
+            String[] parts = ans.split(";");
             this.warningLabel.setText(parts[1]);
             this.warningLabel.setVisible(true);
-            this.app.setAns(null);
+        }
+        else if(ans == "TIMEOUT_ERROR") {
+            // TEMPORARY CODE
+            this.app.showApplicationLayout();
+            // TO DO
+            // This should function should handle that error in other way
+        }
+        else if(ans == "READ_ERROR") {
+            // TEMPORARY CODE;
+            this.app.showApplicationLayout();
+            // TO DO
+            // This should function should handle that error in other way
+        }
+        else if(ans == "CONVERTING_ERROR") {
+            // TEMPORARY CODE
+            this.app.showApplicationLayout();
+            // TO DO
+            // This should function should handle that error in other way
         }
     }
 
@@ -87,20 +104,12 @@ public class LogInLayoutController {
      * Function uses that information to display a proper title on current window
      */
     public void setUp() {
-        System.out.println("Setting up LogIn page...");
-        this.app.setAns(this.app.receiveMessage());
-        System.out.println("Received message: " + this.app.getAns());
-
-        if(this.app.getAns().contains("old")) {
+        String ans = this.app.receiveMessage();
+        if(ans.contains("old")) {
             this.titleLabel.setText("Log In");
         }
-        else if (this.app.getAns().contains("new")) {
+        else if (ans.contains("new")) {
             this.titleLabel.setText("Register");
         }
-        else {
-            this.titleLabel.setText("DISPLAY_ERROR: Log In/Register");
-        }
-        this.app.setAns(null);
-        System.out.println("LogIn page set up.");
     }
 }

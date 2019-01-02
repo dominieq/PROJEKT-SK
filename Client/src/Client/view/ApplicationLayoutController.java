@@ -53,23 +53,25 @@ public class ApplicationLayoutController implements Runnable {
     @Override public void run() {
         this.active = true;
         while(this.active) {
-            if(!this.active) break;
-            if(this.app.getAns().isEmpty()) {
-                this.app.setAns(this.app.receiveMessage());
-            }
-            else if(!this.app.getAns().isEmpty()) {
-                // TO DO
-                // start refresh function
-            }
+            String ans = this.app.receiveMessage();
+            interpretAnswer(ans);
+            System.out.println(ans);
         }
     }
 
     /**
-     * Ends current thread
+     * Terminates while loop in current thread
      */
     public void terminate() {
         this.active = false;
     }
+
+
+    public void interpretAnswer(String ans) {
+
+    }
+
+
 
     // TO DO Javadoc
     @FXML private void initialize() {

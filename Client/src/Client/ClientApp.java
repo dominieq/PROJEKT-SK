@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Optional;
 
 public class ClientApp extends Application {
@@ -26,19 +27,20 @@ public class ClientApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private RootLayoutController rootLayoutController;
+    private ApplicationLayoutController applicationLayoutController;
+    private Thread appThread;
     private volatile Socket clientSocket;
-    private String msg;
-    private volatile String ans;
-    private Boolean actionControl;
-    private Boolean clearToClose;
+    private Boolean loopControlBoolean;
+    private Boolean clearToCloseBoolean;
 
     @Override public void start(Stage primaryStage) {
-        this.actionControl =  true;
+        this.loopControlBoolean =  true;
 
-        while (actionControl) {
+        while (loopControlBoolean) {
             try {
                 this.clientSocket = new Socket("localhost", 1234);
-                this.actionControl = false;
+                this.clientSocket.setSoTimeout(5000);
+                this.loopControlBoolean = false;
             } catch (IOException e) {
                 showConnectionError("connect to");
             }
@@ -63,6 +65,8 @@ public class ClientApp extends Application {
 
             this.rootLayoutController = loader.getController();
             this.rootLayoutController.setClientApp(this);
+
+            this.clearToCloseBoolean = true;
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -110,12 +114,12 @@ public class ClientApp extends Application {
 
             this.rootLayout.setCenter(layout);
 
-            ApplicationLayoutController controller = loader.getController();
-            controller.setApp(this);
-            controller.setUp();
+            this.applicationLayoutController = loader.getController();
+            this.applicationLayoutController.setApp(this);
+            this.applicationLayoutController.setUp();
             /*Start ApplicationLayoutController thread*/
-            Thread appThread = new Thread(controller);
-            appThread.start();
+            this.appThread = new Thread(this.applicationLayoutController);
+            this.appThread.start();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -144,10 +148,11 @@ public class ClientApp extends Application {
         }
     }
 
-    public void showLogOutError() {
+    public void showLogOutError(String error) {
+        /* Set up alert features */
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Unable to log out from server");
-        alert.setHeaderText("You were unable to log out from server");
+        alert.setHeaderText(error);
 
         ButtonType buttonTryAgain = new ButtonType("Try Again");
         ButtonType buttonGoBack = new ButtonType("Go Back");
@@ -158,41 +163,49 @@ public class ClientApp extends Application {
 
         Optional<ButtonType> option = alert.showAndWait();
 
+        /* Interpret user's choice */
         if (option.get() == null || option.get() == buttonExit) {
-            this.clearToClose = true;
-            this.actionControl = false;
+            this.loopControlBoolean = false;
         }
         else if (option.get() == buttonGoBack) {
-            this.clearToClose = false;
-            this.actionControl = false;
+            /* User wants to go back and continue working with application. */
+            this.clearToCloseBoolean = false;
+            this.loopControlBoolean = false;
         }
     }
 
 
     public synchronized String receiveMessage() {
-        String msg = "ERROR";
+        String msg;
         byte[] buffer = new byte[5000];
         try {
+
             InputStream is = this.clientSocket.getInputStream();
             is.read(buffer);
-        } catch (IOException e) {
-            // TO DO
-            // Function should display alert
-            e.printStackTrace();
+
+        } catch (IOException exception) {
+
+            if(exception instanceof SocketTimeoutException) {
+                return "TIMEOUT_ERROR";
+            }
+            else {
+                return "READ_ERROR";
+            }
+
         }
         try {
+
             msg = new String(buffer, "UTF-8");
             String[] parts = msg.split("END");
             msg = parts[0] + "END";
+
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            // TO DO
-            // Function should display alert
+            return "CONVERTING_ERROR";
         }
         return msg;
     }
 
-    public void sendMessage(String msg) {
+    public synchronized void sendMessage(String msg) {
         try {
             OutputStream os = this.clientSocket.getOutputStream();
             os.write(msg.getBytes());
@@ -204,11 +217,11 @@ public class ClientApp extends Application {
     }
 
     public void closeConnection() {
-        this.actionControl = true;
-        while(actionControl) {
+        this.loopControlBoolean = true;
+        while(loopControlBoolean) {
             try {
                 this.clientSocket.close();
-                this.actionControl = false;
+                this.loopControlBoolean = false;
             } catch (IOException exception) {
                 showConnectionError("disconnect from");
             }
@@ -230,36 +243,27 @@ public class ClientApp extends Application {
         return rootLayoutController;
     }
 
-    public Boolean getActionControl() {
-        return actionControl;
+    public ApplicationLayoutController getApplicationLayoutController() {
+        return applicationLayoutController;
     }
 
-    public void setActionControl(Boolean actionControl) {
-        this.actionControl = actionControl;
+    public Thread getAppThread() {
+        return appThread;
     }
 
-    public Boolean getClearToClose() {
-        return clearToClose;
+    public Boolean getClearToCloseBoolean() {
+        return clearToCloseBoolean;
     }
 
-    public void setClearToClose(Boolean clearToClose) {
-        this.clearToClose = clearToClose;
+    public void setClearToCloseBoolean(Boolean clearToCloseBoolean) {
+        this.clearToCloseBoolean = clearToCloseBoolean;
     }
 
-    public String getMsg() {
-        return msg;
+    public Boolean getLoopControlBoolean() {
+        return loopControlBoolean;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setLoopControlBoolean(Boolean loopControlBoolean) {
+        this.loopControlBoolean = loopControlBoolean;
     }
-
-    public String getAns() {
-        return ans;
-    }
-
-    public void setAns(String ans) {
-        this.ans = ans;
-    }
-
 }

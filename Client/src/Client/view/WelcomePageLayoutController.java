@@ -16,22 +16,20 @@ public class WelcomePageLayoutController {
     }
 
     /**
-     * Sends message 'old' to server that user wants to log in
+     * Sends message to server that user wants to log in
      */
     @FXML
     private void handleLogIn () {
-        String msg = "JOIN;old;END";
-        this.app.sendMessage(msg);
+        this.app.sendMessage("JOIN;old;END");
         this.app.showLogInLayout();
     }
 
     /**
-     * Sends message 'new' to server that user wants to register
+     * Sends message to server that user wants to register
      */
     @FXML
     private void handleRegister () {
-        String msg = "JOIN;new;END";
-        this.app.sendMessage(msg);
+        this.app.sendMessage("JOIN;new;END");
         this.app.showLogInLayout();
     }
 
