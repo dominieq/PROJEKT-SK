@@ -24,13 +24,10 @@ public class RootLayoutController {
      *  Calls logOut function. Then shows WelcomePageLayout.
      */
     @FXML private void handleLogOut () {
-        this.app.setLoopControlBoolean(true);
-        while(this.app.getLoopControlBoolean()) {
-            this.logOut();
-        }
-        if(this.app.getClearToCloseBoolean()) {
-            this.app.showWelcomePageLayout();
-        }
+
+        this.logOut();
+        this.app.showWelcomePageLayout();
+
     }
 
     /**
@@ -40,17 +37,18 @@ public class RootLayoutController {
     @FXML private void handleClose() {
         /* Application cannot log out user when they haven't been logged in */
         /* HINT: logoutMenuItem is only visible when in ApplicationLayout */
-        if(this.logoutMenuItem.isVisible()){
+        if(this.logoutMenuItem.isVisible())
+            this.logOut();
 
-            this.app.setLoopControlBoolean(true);
-            while(this.app.getLoopControlBoolean()) {
-                this.logOut();
-            }
+        this.app.closeConnection();
 
-        }
         if(this.app.getClearToCloseBoolean()) {
-            this.app.closeConnection();
             this.app.getPrimaryStage().close();
+        }
+        else {
+            String title = "Closing error!";
+            String error = "Application was unable to close connection.";
+            this.app.showError(title, error);
         }
     }
 
@@ -72,16 +70,32 @@ public class RootLayoutController {
         if (ans.startsWith("ACK_TERM")) {
 
             /*Server acknowledged our request and we can exit application*/
-            if (endApplicationLayoutControllerThread()) {
-                this.app.setLoopControlBoolean(false);
-            } else {
-                this.app.showLogOutError("Client couldn't terminate application thread");
+            if (!endApplicationLayoutControllerThread()) {
+                String title = "Thread error!";
+                String error = "Client couldn't terminate application thread";
+                this.app.showError(title, error);
+                return;
             }
 
         } else if (ans.startsWith("ERR_TERM")) {
 
             String parts[] = ans.split(";");
-            this.app.showLogOutError(parts[1]);
+            String title = "Server error!";
+            String error = parts[1];
+            this.app.showError(title, error);
+            return;
+
+        } else if(ans == "TIMEOUT_ERROR") {
+
+            // TO DO
+            // Handle TIMEOUT_ERROR
+            return;
+
+        } else if(ans == "READ_ERROR") {
+
+            // TO DO
+            // Handle READ_ERROR
+            return;
 
         }
     }
