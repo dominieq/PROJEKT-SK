@@ -1,14 +1,16 @@
 package Client;
 
+import Client.models.*;
 import Client.view.ApplicationLayoutController;
 import Client.view.LogInLayoutController;
 import Client.view.RootLayoutController;
 import Client.view.WelcomePageLayoutController;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -29,6 +31,9 @@ public class ClientApp extends Application {
     private Thread appThread;
     private volatile Socket clientSocket;
     private Boolean clearToCloseBoolean;
+    private ObservableList<Tag> tagObservableList;
+    private ObservableList<Tag> userTagObservableList;
+    private ObservableList<Publication> publicationObservableList;
 
     @Override public void start(Stage primaryStage) {
 
@@ -43,7 +48,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/RootLayout.fxml"));
-            this.rootLayout = (BorderPane) loader.load();
+            this.rootLayout = loader.load();
 
             Scene scene = new Scene(this.rootLayout);
             this.primaryStage.setScene(scene);
@@ -52,6 +57,9 @@ public class ClientApp extends Application {
             this.rootLayoutController.setClientApp(this);
 
             this.clearToCloseBoolean = true;
+            this.tagObservableList = FXCollections.observableArrayList();
+            this.userTagObservableList = FXCollections.observableArrayList();
+            this.publicationObservableList = FXCollections.observableArrayList();
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -63,7 +71,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/WelcomePageLayout.fxml"));
-            AnchorPane layout = (AnchorPane) loader.load();
+            AnchorPane layout = loader.load();
 
             this.rootLayout.setCenter(layout);
 
@@ -79,7 +87,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/LogInLayout.fxml"));
-            AnchorPane layout = (AnchorPane) loader.load();
+            AnchorPane layout = loader.load();
 
             this.rootLayout.setCenter(layout);
 
@@ -95,7 +103,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/ApplicationLayout.fxml"));
-            TabPane layout = (TabPane) loader.load();
+            TabPane layout = loader.load();
 
             this.rootLayout.setCenter(layout);
 
@@ -131,9 +139,11 @@ public class ClientApp extends Application {
         } catch (IOException exception) {
 
             if(exception instanceof SocketTimeoutException) {
+                /*Timeout was exceeded and read function didn't receive any message*/
                 return "TIMEOUT_ERROR";
             }
             else {
+                /*Any other possible error that may occur when using read function*/
                 return "READ_ERROR";
             }
 
@@ -144,15 +154,17 @@ public class ClientApp extends Application {
         return msg;
     }
 
-    public synchronized void sendMessage(String msg) {
+    public synchronized Boolean sendMessage(String msg) {
+
         try {
             OutputStream os = this.clientSocket.getOutputStream();
             os.write(msg.getBytes());
-        } catch (IOException e) {
-            // TO DO
-            // Function should display alert
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return false;
         }
+        return true;
+
     }
 
     public void closeConnection() {
@@ -204,5 +216,18 @@ public class ClientApp extends Application {
 
     public Boolean getClearToCloseBoolean() {
         return clearToCloseBoolean;
+    }
+
+    public ObservableList<Tag> getTagObservableList() {
+        return tagObservableList;
+    }
+
+
+    public ObservableList<Publication> getPublicationObservableList() {
+        return publicationObservableList;
+    }
+
+    public ObservableList<Tag> getUserTagObservableList() {
+        return userTagObservableList;
     }
 }
