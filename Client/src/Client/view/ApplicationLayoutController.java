@@ -62,7 +62,7 @@ public class ApplicationLayoutController implements Runnable {
         while(this.active) {
             String ans = this.app.receiveMessage();
             interpretAnswer(ans);
-            System.out.println(ans);
+            System.out.println("Thread: " + ans);
         }
     }
 
@@ -182,6 +182,7 @@ public class ApplicationLayoutController implements Runnable {
         this.app.sendMessage("SEND_PUB;" + tagName + ";" + title + ";" + content + ";END");
 
         String ans =  this.app.receiveMessage();
+        System.out.println("Submit button: " + ans);
 
         if(ans.startsWith("ACK_SEND_PUB;")) {
             this.userTitleTextField.clear();
@@ -223,6 +224,7 @@ public class ApplicationLayoutController implements Runnable {
         }
 
         String ans = this.app.receiveMessage();
+        System.out.println("Add sub button: " + ans);
         if(ans.startsWith("ACK_SUB;") && tag != null) {
             tag.getButton().setDisable(true);
             tag.getButton().setVisible(true);
@@ -253,6 +255,7 @@ public class ApplicationLayoutController implements Runnable {
         }
 
         String ans = this.app.receiveMessage();
+        System.out.println("Discard sub button: " + ans);
         if(ans.startsWith("ACK_SUB;F;") && tag != null) {
             tag.getButton().setDisable(true);
             tag.getButton().setVisible(true);

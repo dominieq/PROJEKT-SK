@@ -44,6 +44,11 @@
                         <Cursor fx:constant="OPEN_HAND" />
                      </cursor>
                   </TableView>
+                  <Label fx:id="subWarningLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="582.0" layoutY="772.0" text="Warning" textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
         </content>
@@ -69,7 +74,10 @@
                         <Font size="30.0" />
                      </font>
                   </Label>
-                  <Label fx:id="commentWarningLabel" layoutX="440.0" layoutY="811.0" text="You have zero subscriptions. Choose your subscriptions." textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0" />
+                  <Label fx:id="commentWarningLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="440.0" layoutY="811.0" text="Warning" textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font></Label>
                </children>
             </AnchorPane>
         </content>
@@ -104,7 +112,10 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label fx:id="userWarningLabel" layoutX="492.0" layoutY="800.0" text="You have zero subscriptions. Choose your subscriptions." textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0" />
+                  <Label fx:id="userWarningLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="492.0" layoutY="800.0" text="Warning" textFill="RED" visible="false" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="360.0" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="760.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font></Label>
                   <Button layoutX="229.0" layoutY="416.0" mnemonicParsing="false" onAction="#handleSubmit" text="Submit" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="660.0" AnchorPane.topAnchor="690.0">
                      <font>
                         <Font size="20.0" />
