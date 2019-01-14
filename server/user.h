@@ -12,6 +12,8 @@ class User {
     string password;
 
     list<Tag *> sublist;
+public:
+    void setSublist(const list<Tag *> &sublist);
 
 public:
     User(string, string);
@@ -32,17 +34,17 @@ public:
      * Pobranie listy subskrybowanych tagów.
      * @return lista subskrybowanych tagów
      */
-    list<Tag*> get_sublist();
+    list<Tag *> get_sublist();
 
     /**
      * Dodanie tagu do listy subskrybowanych.
      */
-    void add_sub(Tag*);
+    void add_sub(Tag *);
 
     /**
      * Usunięcie tagu z listy subskrybowanych.
      */
-    void del_sub(Tag*);
+    void del_sub(Tag *);
 
 };
 
