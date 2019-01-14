@@ -1,7 +1,8 @@
 #include <iostream>
+#include "connection.h"
+#include "socket.h"
 
 using namespace std;
-
 int main(int argc, char* argv[]) {
     cout << "Hello, World!" << endl;
 
@@ -25,5 +26,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-#include "connection.h"
-#include "socket.h"
