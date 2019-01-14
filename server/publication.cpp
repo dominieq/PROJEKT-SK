@@ -21,7 +21,9 @@ User *Publication::get_author() {
 }
 
 string Publication::get_date_s() {
-    return ctime(&date);
+    string edited = ctime(&date);
+    edited = edited.substr(0, edited.size()-1);
+    return edited;
 }
 
 string Publication::get_content() {
