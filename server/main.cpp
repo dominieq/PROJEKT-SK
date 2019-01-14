@@ -1,5 +1,6 @@
 #include <iostream>
 #include "socket.h"
+#include "connection.h"
 
 using namespace std;
 
@@ -12,6 +13,14 @@ int main(int argc, char* argv[]) {
     }
 
     Socket * server_socket = new Socket(atoi(argv[1]));
+
+    Connection * conn = new Connection(server_socket->s_get_server_socket_descriptor());
+
+    conn->s_read();
+
+    conn->s_write("testowy\0");
+
+    delete conn;
 
     delete server_socket;
 
