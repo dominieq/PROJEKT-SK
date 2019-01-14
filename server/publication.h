@@ -3,6 +3,7 @@
 
 
 #include <iostream>
+#include <list>
 #include "tag.h"
 #include "user.h"
 
@@ -14,6 +15,11 @@ class Publication {
     User *author;
     time_t date;
     string content;
+
+    /**
+     * statyczna lista zawierająca wszystkie publikacje
+     */
+    static list<Publication *> publicationlist;
 
 public:
     Publication(Tag *, string, User *, string);
@@ -47,6 +53,15 @@ public:
      * @return treść
      */
     string get_content();
+
+    /**
+     * Zwraca statyczną listę wskaźników na wszystkie publikacje.
+     * @return lista publikacji
+     */
+    static list<Publication *> get_publicationlist();
+
+    //TODO
+    static list<Publication *> get_publicationlist(Tag *);
 
 };
 

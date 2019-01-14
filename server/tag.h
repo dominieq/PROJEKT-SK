@@ -2,11 +2,17 @@
 #define SERVER_TAG_H
 
 #include <iostream>
+#include <list>
 
 using namespace std;
 
 class Tag {
     string tagname;
+
+    /**
+     * statyczna lista zawierjąca wszystkie utworzone tagi
+     */
+    static list<Tag *> taglist;
 
 public:
     Tag(string);
@@ -16,6 +22,18 @@ public:
      * @return nazwa tagu
      */
     string get_tagname();
+
+    /**
+     * Zwraca statyczną listę wskaźników na wszystkich dostepnych tagów.
+     * @return lista dostępnych tagów
+     */
+    static list<Tag *> get_taglist();
+
+    /**
+     * Zwraca wskaźnik na określony nazwą tag.
+     * @return wskaźnik na tag
+     */
+    static Tag *get_tag(string);
 };
 
 

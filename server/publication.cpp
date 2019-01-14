@@ -1,11 +1,15 @@
 #include "publication.h"
 
+list<Publication *> Publication::publicationlist;
+
 Publication::Publication(Tag *t, string s, User *u, string c) {
     tag = t;
     title = s;
     author = u;
     time (&date);
     content = c;
+
+    publicationlist.push_back(this);
 }
 
 Tag *Publication::get_tag() {
@@ -28,4 +32,18 @@ string Publication::get_date_s() {
 
 string Publication::get_content() {
     return content;
+}
+
+list<Publication *> Publication::get_publicationlist() {
+    return publicationlist;
+}
+
+list<Publication *> Publication::get_publicationlist(Tag *t) {
+    list<Publication *> specified;
+    for (auto v : Publication::get_publicationlist()) {
+        if (v->get_tag() == t) {
+            specified.push_back(v);
+        }
+    }
+    return specified;
 }

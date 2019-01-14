@@ -12,8 +12,11 @@ class User {
     string password;
 
     list<Tag *> sublist;
-public:
-    void setSublist(const list<Tag *> &sublist);
+
+    /**
+     * statyczna lista zawierająca wszystkich utworzonych użytkownikow
+     */
+    static list<User *> userlist;
 
 public:
     User(string, string);
@@ -46,6 +49,17 @@ public:
      */
     void del_sub(Tag *);
 
+    /**
+     * Zwraca statyczną listę wskaźników na wszystkich utworzonych użytkowników.
+     * @return lista utworzonych użytkowników
+     */
+    static list<User *> get_userlist();
+
+    /**
+     * Zwraca wskaźnik na określonego nazwą użytkownika
+     * @return wskaźnik na użytkownika
+     */
+    static User *get_user(string);
 };
 
 
