@@ -2,6 +2,8 @@
 #define SERVER_CONNECTION_H
 
 #include <iostream>
+#include <list>
+#include "user.h"
 
 using namespace std;
 
@@ -12,7 +14,15 @@ class Connection {
     char buffer [BUF_SIZE];
     int dlugosc;
 
+    bool active;
+    User *online;
+
     void s_accept(int);
+
+    /**
+     * statyczna lista zawierjąca wszystkie aktywne połączenia
+     */
+    static list<Connection *> connectionlist;
 
 public:
     Connection(int);
@@ -35,6 +45,18 @@ public:
      */
     void s_write(string);
 
+
+
+    //TODO nazwa i opisy
+    void disable();
+    void assign(User *);
+    User *get_user();
+
+    /**
+     * Zwraca statyczną listę wskaźników na wszystkie aktywne połączenia.
+     * @return lista aktywnych połączeń
+     */
+    static list<Connection *> get_connectionlist();
 };
 
 
