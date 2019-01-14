@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include "user.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ class Connection {
     int dlugosc;
 
     bool active;
+    User *online;
 
     void s_accept(int);
 
@@ -42,6 +44,13 @@ public:
      * Wysłanie komunikatu do klienta.
      */
     void s_write(string);
+
+
+
+    //TODO nazwa i opisy
+    void disable();
+    void assign(User *);
+    User *get_user();
 
     /**
      * Zwraca statyczną listę wskaźników na wszystkie aktywne połączenia.

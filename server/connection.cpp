@@ -1,4 +1,5 @@
 #include "connection.h"
+#include "decipher.h"
 #include <unistd.h>
 #include <sys/socket.h>
 
@@ -11,6 +12,17 @@ Connection::Connection(int server_socket_descriptor) {
 }
 
 Connection::~Connection() {
+    disable();
+
+    for(list<Connection*>::iterator it = connectionlist.begin(); it != connectionlist.end(); /*  */ ) {
+        if (*it == this) {
+            it = connectionlist.erase(it);
+            break;
+        } else {
+            ++it;
+        }
+    }
+
     cout << "OK: Zamknięcie połączenia csd: " << connection_socket_descriptor << endl;
     close(connection_socket_descriptor);
 }
@@ -35,6 +47,7 @@ void Connection::s_read() {
             buffer[dlugosc] = '\0';
             cout << buffer << endl;
             //TODO analiza
+            Decipher::study(buffer, this);
         } else {
             cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << endl;
             active = false;
@@ -48,6 +61,19 @@ void Connection::s_write(string tresc) {
     write(connection_socket_descriptor, tresc.c_str(), tresc.size());
 }
 
+//TODO czy potrzebne?
+void Connection::disable() {
+    active = false;
+}
+
 list<Connection *> Connection::get_connectionlist() {
     return connectionlist;
+}
+
+void Connection::assign(User *u) {
+    online = u;
+}
+
+User *Connection::get_user() {
+    return online;
 }
