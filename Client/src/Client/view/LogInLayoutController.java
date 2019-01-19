@@ -42,10 +42,10 @@ public class LogInLayoutController {
         String pass = this.passwordField.getText();
 
         /*Send nick and password to server*/
-        if(this.titleLabel.getText() == "Register") {
+        if(this.titleLabel.getText().equals("Register")) {
             this.app.sendMessage("JOIN_NEW;" + nick + ";" + pass + ";END");
         }
-        else if(this.titleLabel.getText() == "Log In") {
+        else if(this.titleLabel.getText().equals("Log In")) {
             this.app.sendMessage("JOIN_OLD;" + nick + ";" + pass + ";END");
         }
         else { ;
@@ -54,6 +54,7 @@ public class LogInLayoutController {
 
         /*Receive information from server and interpret it*/
         String ans = this.app.receiveMessage();
+        System.out.println("Logging in: " + ans);
         if(ans.startsWith("ACK_JOIN")) {
             this.app.showApplicationLayout();
         }
@@ -62,19 +63,19 @@ public class LogInLayoutController {
             this.warningLabel.setText(parts[1]);
             this.warningLabel.setVisible(true);
         }
-        else if(ans == "TIMEOUT_ERROR") {
+        else if(ans.equals("TIMEOUT_ERROR")) {
             // TEMPORARY CODE
             this.app.showApplicationLayout();
             // TO DO
             // This should function should handle that error in other way
         }
-        else if(ans == "READ_ERROR") {
+        else if(ans.equals("READ_ERROR")) {
             // TEMPORARY CODE;
             this.app.showApplicationLayout();
             // TO DO
             // This should function should handle that error in other way
         }
-        else if(ans == "CONVERTING_ERROR") {
+        else if(ans.equals("CONVERTING_ERROR")) {
             // TEMPORARY CODE
             this.app.showApplicationLayout();
             // TO DO
@@ -105,6 +106,7 @@ public class LogInLayoutController {
      */
     public void setUp() {
         String ans = this.app.receiveMessage();
+        System.out.println("Loggin in: " + ans);
         if(ans.contains("old")) {
             this.titleLabel.setText("Log In");
         }

@@ -47,7 +47,7 @@ public class WelcomePageLayoutController {
 
     }
 
-    public void connect(String msg) {
+    private void connect(String msg) {
 
         String addr = addressTextField.getText();
         String port = portTextField.getText();

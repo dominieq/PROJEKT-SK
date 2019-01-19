@@ -13,20 +13,32 @@ public class RootLayoutController {
 
     @FXML private SeparatorMenuItem separatorMenuItem;
 
-    /**
-     * Empty fxml initialize method
-     */
-    @FXML private void initialize() {
+    public RootLayoutController () {}
 
-    }
+    @FXML private void initialize() {}
 
     /**
-     *  Calls logOut function. Then shows WelcomePageLayout.
+     *  Calls logOut function and closes connection.
+     *  Then shows WelcomePageLayout.
      */
     @FXML private void handleLogOut () {
 
-        this.logOut();
-        this.app.showWelcomePageLayout();
+        if(this.logOut()) {
+            this.app.closeConnection();
+        }
+        else {
+            return;
+        }
+
+        if( this.app.getClearToCloseBoolean()) {
+            this.app.showWelcomePageLayout();
+        }
+        else {
+            String title = "Closing error!";
+            String error = "Application was unable to close connection.";
+            this.app.showError(title, error);
+        }
+
 
     }
 
@@ -37,10 +49,17 @@ public class RootLayoutController {
     @FXML private void handleClose() {
         /* Application cannot log out user when they haven't been logged in */
         /* HINT: logoutMenuItem is only visible when in ApplicationLayout */
-        if(this.logoutMenuItem.isVisible())
-            this.logOut();
+        if(this.logoutMenuItem.isVisible()) {
 
-        this.app.closeConnection();
+            if(this.logOut()) {
+                /*When log out function returned true we can safely call close procedure*/
+                this.app.closeConnection();
+            }
+            else {
+                return;
+            }
+
+        }
 
         if(this.app.getClearToCloseBoolean()) {
             this.app.getPrimaryStage().close();
@@ -55,15 +74,16 @@ public class RootLayoutController {
     /**
      * Sends message to server:
      *     "TERM;END" which means that user wants to log out or exit
-     * Client will receive a message after that:
-     *     1) "ACK_TERM;END" which means server acknowledged our request and w can exit.
+     * Client will receive an answer after that:
+     *     1) "ACK_TERM;END" which means server acknowledged our request and we can exit.
      *     2) "ERR_TERM;<error>;END" which means and error occurred and we cannot exit.
      * Function responds to message and:
      *     1) Terminates current thread.
      *     2) Displays alert, with the description of an error.
      * When a thread was terminated we can exit. Otherwise, function displays alert.
      */
-    public void logOut() {
+    private Boolean logOut() {
+
         this.app.sendMessage("TERM;END");
         String ans = this.app.receiveMessage();
 
@@ -74,30 +94,27 @@ public class RootLayoutController {
                 String title = "Thread error!";
                 String error = "Client couldn't terminate application thread";
                 this.app.showError(title, error);
-                return;
+                return false;
             }
 
         } else if (ans.startsWith("ERR_TERM")) {
 
-            String parts[] = ans.split(";");
+            String[] parts = ans.split(";");
             String title = "Server error!";
             String error = parts[1];
             this.app.showError(title, error);
-            return;
+            return false;
 
-        } else if(ans == "TIMEOUT_ERROR") {
+        } else if(ans.equals("TIMEOUT_ERROR")) {
 
-            // TO DO
-            // Handle TIMEOUT_ERROR
-            return;
-
-        } else if(ans == "READ_ERROR") {
-
-            // TO DO
-            // Handle READ_ERROR
-            return;
+            String title = "Timeout error!";
+            String error = "Didn't receive answer from server on time.";
+            this.app.showError(title, error);
+            return false;
 
         }
+        return true;
+
     }
 
     /**
@@ -105,7 +122,7 @@ public class RootLayoutController {
      * Otherwise, it will return true.
      * @return    Boolean value
      */
-    public Boolean endApplicationLayoutControllerThread() {
+    private Boolean endApplicationLayoutControllerThread() {
         if(this.app.getAppThread() != null) {
             try {
                 this.app.getApplicationLayoutController().terminate();
@@ -120,7 +137,7 @@ public class RootLayoutController {
     /**
      * Sets logoutMenuItem and separatorMenuItem to be visible
      */
-    public void setVisible() {
+    void setVisible() {
         this.logoutMenuItem.setVisible(true);
         this.separatorMenuItem.setVisible(true);
     }
@@ -128,16 +145,9 @@ public class RootLayoutController {
     /**
      * Sets logoutMenuItem and separatorMenuItem to be invisible
      */
-    public void setInvisible () {
+    void setInvisible() {
         this.logoutMenuItem.setVisible(false);
         this.separatorMenuItem.setVisible(false);
-    }
-
-    /**
-     * Empty class constructor
-     */
-    public RootLayoutController () {
-
     }
 
     /**
