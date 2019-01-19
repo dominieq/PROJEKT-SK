@@ -40,4 +40,9 @@ public class Tag {
     public Button getButton() {
         return this.button;
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

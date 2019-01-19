@@ -157,6 +157,7 @@ public class ApplicationLayoutController implements Runnable {
         this.commentDateColumn.setCellValueFactory(
                 cellData -> cellData.getValue().getDateProperty());
 
+
         this.commentTableView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showContent(newValue));
     }

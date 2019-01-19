@@ -129,6 +129,11 @@ public class ClientApp extends Application {
 
 
     public synchronized String receiveMessage() {
+
+        // TODO
+        // Function should manage incomplete messages
+        // Receives wrong messages
+
         String msg;
         byte[] buffer = new byte[5000];
         try {
@@ -149,8 +154,8 @@ public class ClientApp extends Application {
 
         }
         msg = new String(buffer);
-        String[] parts = msg.split("END");
-        msg = parts[0] + "END";
+        String[] parts = msg.split(";END");
+        msg = parts[0] + ";END";
         return msg;
     }
 
