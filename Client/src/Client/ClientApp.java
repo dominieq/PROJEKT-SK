@@ -1,14 +1,16 @@
 package Client;
 
+import Client.models.*;
 import Client.view.ApplicationLayoutController;
 import Client.view.LogInLayoutController;
 import Client.view.RootLayoutController;
 import Client.view.WelcomePageLayoutController;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -17,10 +19,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Optional;
 
 public class ClientApp extends Application {
 
@@ -30,35 +30,25 @@ public class ClientApp extends Application {
     private ApplicationLayoutController applicationLayoutController;
     private Thread appThread;
     private volatile Socket clientSocket;
-    private Boolean loopControlBoolean;
     private Boolean clearToCloseBoolean;
+    private ObservableList<Tag> tagObservableList;
+    private ObservableList<Tag> userTagObservableList;
+    private ObservableList<Publication> publicationObservableList;
 
     @Override public void start(Stage primaryStage) {
-        this.loopControlBoolean =  true;
-
-        while (loopControlBoolean) {
-            try {
-                this.clientSocket = new Socket("localhost", 1234);
-                this.clientSocket.setSoTimeout(5000);
-                this.loopControlBoolean = false;
-            } catch (IOException e) {
-                showConnectionError("connect to");
-            }
-        }
 
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Publish/Subscribe Project");
-
         initRootLayout();
-
         showWelcomePageLayout();
+
     }
 
     public void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/RootLayout.fxml"));
-            this.rootLayout = (BorderPane) loader.load();
+            this.rootLayout = loader.load();
 
             Scene scene = new Scene(this.rootLayout);
             this.primaryStage.setScene(scene);
@@ -67,6 +57,9 @@ public class ClientApp extends Application {
             this.rootLayoutController.setClientApp(this);
 
             this.clearToCloseBoolean = true;
+            this.tagObservableList = FXCollections.observableArrayList();
+            this.userTagObservableList = FXCollections.observableArrayList();
+            this.publicationObservableList = FXCollections.observableArrayList();
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -78,7 +71,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/WelcomePageLayout.fxml"));
-            AnchorPane layout = (AnchorPane) loader.load();
+            AnchorPane layout = loader.load();
 
             this.rootLayout.setCenter(layout);
 
@@ -94,7 +87,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/LogInLayout.fxml"));
-            AnchorPane layout = (AnchorPane) loader.load();
+            AnchorPane layout = loader.load();
 
             this.rootLayout.setCenter(layout);
 
@@ -110,7 +103,7 @@ public class ClientApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/ApplicationLayout.fxml"));
-            TabPane layout = (TabPane) loader.load();
+            TabPane layout = loader.load();
 
             this.rootLayout.setCenter(layout);
 
@@ -125,57 +118,22 @@ public class ClientApp extends Application {
         }
     }
 
-    /**
-     * Displays error alert. Gives two options. First to try again which will make no changes.
-     * Second to exit anyway which will cause the application to exit with status 1.
-     * If no option was chosen then the the application will exit with status 1
-     */
-    private void showConnectionError(String action) {
+    public void showError(String title, String error) {
+
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Unable to " + action + " server");
-        alert.setHeaderText("You were unable to " + action + " server");
-
-        ButtonType buttonTryAgain = new ButtonType("Try Again");
-        ButtonType buttonExit = new ButtonType("Exit");
-
-        alert.getButtonTypes().clear();
-        alert.getButtonTypes().addAll(buttonTryAgain, buttonExit);
-
-        Optional<ButtonType> option = alert.showAndWait();
-
-        if (option.get() == null || option.get() == buttonExit) {
-            System.exit(1);
-        }
-    }
-
-    public void showLogOutError(String error) {
-        /* Set up alert features */
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Unable to log out from server");
+        alert.setTitle(title);
         alert.setHeaderText(error);
+        alert.showAndWait();
 
-        ButtonType buttonTryAgain = new ButtonType("Try Again");
-        ButtonType buttonGoBack = new ButtonType("Go Back");
-        ButtonType buttonExit = new ButtonType("Exit Anyway");
-
-        alert.getButtonTypes().clear();
-        alert.getButtonTypes().addAll(buttonTryAgain, buttonGoBack, buttonExit);
-
-        Optional<ButtonType> option = alert.showAndWait();
-
-        /* Interpret user's choice */
-        if (option.get() == null || option.get() == buttonExit) {
-            this.loopControlBoolean = false;
-        }
-        else if (option.get() == buttonGoBack) {
-            /* User wants to go back and continue working with application. */
-            this.clearToCloseBoolean = false;
-            this.loopControlBoolean = false;
-        }
     }
 
 
     public synchronized String receiveMessage() {
+
+        // TODO
+        // Function should manage incomplete messages
+        // Receives wrong messages
+
         String msg;
         byte[] buffer = new byte[5000];
         try {
@@ -186,46 +144,48 @@ public class ClientApp extends Application {
         } catch (IOException exception) {
 
             if(exception instanceof SocketTimeoutException) {
+                /*Timeout was exceeded and read function didn't receive any message*/
                 return "TIMEOUT_ERROR";
             }
             else {
+                /*Any other possible error that may occur when using read function*/
                 return "READ_ERROR";
             }
 
         }
-        try {
-
-            msg = new String(buffer, "UTF-8");
-            String[] parts = msg.split("END");
-            msg = parts[0] + "END";
-
-        } catch (UnsupportedEncodingException e) {
-            return "CONVERTING_ERROR";
-        }
+        msg = new String(buffer);
+        String[] parts = msg.split(";END");
+        msg = parts[0] + ";END";
         return msg;
     }
 
-    public synchronized void sendMessage(String msg) {
+    public synchronized Boolean sendMessage(String msg) {
+
         try {
             OutputStream os = this.clientSocket.getOutputStream();
             os.write(msg.getBytes());
-        } catch (IOException e) {
-            // TO DO
-            // Function should display alert
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return false;
         }
+        return true;
+
     }
 
     public void closeConnection() {
-        this.loopControlBoolean = true;
-        while(loopControlBoolean) {
-            try {
-                this.clientSocket.close();
-                this.loopControlBoolean = false;
-            } catch (IOException exception) {
-                showConnectionError("disconnect from");
+        try {
+
+            this.clientSocket.close();
+
+        } catch (Exception exception) {
+
+            if(exception instanceof NullPointerException) {
+                this.clearToCloseBoolean = true;
             }
+            this.clearToCloseBoolean = false;
+
         }
+        this.clearToCloseBoolean = true;
     }
 
     public ClientApp() {
@@ -247,6 +207,14 @@ public class ClientApp extends Application {
         return applicationLayoutController;
     }
 
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public void setClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
     public Thread getAppThread() {
         return appThread;
     }
@@ -255,15 +223,16 @@ public class ClientApp extends Application {
         return clearToCloseBoolean;
     }
 
-    public void setClearToCloseBoolean(Boolean clearToCloseBoolean) {
-        this.clearToCloseBoolean = clearToCloseBoolean;
+    public ObservableList<Tag> getTagObservableList() {
+        return tagObservableList;
     }
 
-    public Boolean getLoopControlBoolean() {
-        return loopControlBoolean;
+
+    public ObservableList<Publication> getPublicationObservableList() {
+        return publicationObservableList;
     }
 
-    public void setLoopControlBoolean(Boolean loopControlBoolean) {
-        this.loopControlBoolean = loopControlBoolean;
+    public ObservableList<Tag> getUserTagObservableList() {
+        return userTagObservableList;
     }
 }

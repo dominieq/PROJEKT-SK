@@ -2,10 +2,22 @@ package Client.view;
 
 import Client.ClientApp;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class WelcomePageLayoutController {
 
     private ClientApp app;
+
+    @FXML private TextField addressTextField;
+
+    @FXML private TextField portTextField;
+
+    @FXML private Label warningLabel;
 
     /**
      * Empty fxml initialize method
@@ -20,8 +32,9 @@ public class WelcomePageLayoutController {
      */
     @FXML
     private void handleLogIn () {
-        this.app.sendMessage("JOIN;old;END");
-        this.app.showLogInLayout();
+
+        this.connect("JOIN;new;END");
+
     }
 
     /**
@@ -29,8 +42,55 @@ public class WelcomePageLayoutController {
      */
     @FXML
     private void handleRegister () {
-        this.app.sendMessage("JOIN;new;END");
-        this.app.showLogInLayout();
+
+        this.connect("JOIN;new;END");
+
+    }
+
+    private void connect(String msg) {
+
+        String addr = addressTextField.getText();
+        String port = portTextField.getText();
+
+        try {
+
+            if(addr.matches(".*\\d+.*")) {
+                this.app.setClientSocket( new Socket( InetAddress.getByName(addr), Integer.parseInt(port)) );
+            }
+            else if (addr.isEmpty()) {
+                throw new NullPointerException();
+            }
+            else {
+                this.app.setClientSocket( new Socket( addr, Integer.parseInt(port)) );
+            }
+
+            this.app.getClientSocket().setSoTimeout(5000);
+            this.app.sendMessage(msg);
+            this.app.showLogInLayout();
+
+        } catch (Exception exception) {
+
+            if (exception instanceof NullPointerException) {
+                this.warningLabel.setText("You forgot to write address.");
+                this.warningLabel.setVisible(true);
+                this.addressTextField.setPromptText("Fill in the missing part.");
+            }
+            else if(exception instanceof UnknownHostException) {
+                this.warningLabel.setText("Host unreachable. Check your address.");
+                this.warningLabel.setVisible(true);
+                this.addressTextField.clear();
+            }
+            else if(exception instanceof IllegalArgumentException) {
+                this.warningLabel.setText("Invalid port number. Check your port number.");
+                this.warningLabel.setVisible(true);
+                this.portTextField.clear();
+            }
+            else {
+                this.warningLabel.setText("Server not responding, try again.");
+                this.warningLabel.setVisible(true);
+            }
+
+        }
     }
 
     /**
