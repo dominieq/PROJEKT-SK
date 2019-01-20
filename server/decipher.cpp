@@ -39,7 +39,7 @@ string Decipher::pubprepare(Publication *p) {
 void Decipher::a_join(string tekst, Connection *conn) {
     if (tekst.substr(5,7) == "old;END" && User::get_userlist().empty()) {
         conn->s_write("ERR_JOIN;no_old;END");
-    } else if (tekst.substr(5,7) == "old;END" && User::get_userlist().empty()) {
+    } else if (tekst.substr(5,7) == "old;END" && !User::get_userlist().empty()) {
         conn->s_write("ACK_JOIN;old;END");
     } else if (tekst.substr(5,7) == "new;END") {
         conn->s_write("ACK_JOIN;new;END");
