@@ -26,7 +26,7 @@ bool order (Tag *first, Tag *second) {
 
 User::User(string n, string p) {
     bool nowy = true;
-    for (auto v : userlist) {
+    for (auto *v : userlist) {
         if (v->get_nick() == n) {
             nowy = false;
             break;
@@ -63,8 +63,17 @@ void User::add_sub(Tag *nowy) {
     sublist.unique(same);
 }
 
+bool User::check_sub(Tag *t) {
+    for (auto *v : sublist) {
+        if (v == t) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void User::del_sub(Tag *usun) {
-    for(list<Tag*>::iterator it = sublist.begin(); it != sublist.end(); /*  */ ) {
+    for (auto it = sublist.begin(); it != sublist.end(); /*  */ ) {
         if (same(*it, usun)) {
             it = sublist.erase(it);
         } else {
@@ -78,7 +87,7 @@ list <User *> User::get_userlist() {
 }
 
 User *User::get_user(string u) {
-    for (auto v : User::get_userlist()) {
+    for (auto *v : User::get_userlist()) {
         if (v->get_nick() == u) {
             return v;
         }

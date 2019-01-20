@@ -40,6 +40,12 @@ public:
     list<Tag *> get_sublist();
 
     /**
+     * Sprawdza, czy użutkownik subuje dany tag.
+     * @return true - tak; false - nie
+     */
+    bool check_sub(Tag *);
+
+    /**
      * Dodanie tagu do listy subskrybowanych.
      */
     void add_sub(Tag *);

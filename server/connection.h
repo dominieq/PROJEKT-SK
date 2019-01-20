@@ -12,7 +12,8 @@ using namespace std;
 class Connection {
     int connection_socket_descriptor;
     char buffer [BUF_SIZE];
-    int dlugosc;
+//    int dlugosc;
+    ssize_t dlugosc;
 
     bool active;
     User *online;
@@ -45,11 +46,18 @@ public:
      */
     void s_write(string);
 
-
-
     //TODO nazwa i opisy
     void disable();
+
+    /**
+     * Przypisuje użytkownika do połączenia po zalogowaniu.
+     */
     void assign(User *);
+
+    /**
+     * Zwraca wskaźnik na zalogowanego użytkownika dla aktualnego połączenia.
+     * @return użytkownik
+     */
     User *get_user();
 
     /**
