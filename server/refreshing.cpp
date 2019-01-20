@@ -105,12 +105,8 @@ void Refreshing::publishing(Connection *conn) {
 //--------------------------------//
 
 void Refreshing::refreshing() {
-    cout << "sleeep0" << endl;
     while (true) {
-        cout << "sleeep1" << endl;
         sleep(5);
-
-        cout << "sleeep2" << endl;
 
         for (auto *v : Connection::get_connectionlist()) {
             if (v->get_user() != nullptr) {

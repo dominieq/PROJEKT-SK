@@ -85,11 +85,19 @@ void Decipher::a_ack_tag(string tekst, Connection *conn) {
     //TODO?
 };
 
+void Decipher::a_ack_usr_tag(string tekst, Connection *conn) {
+    //TODO?
+};
+
 void Decipher::a_ack_pub(string tekst, Connection *conn) {
     //TODO
 };
 
 void Decipher::a_err_tag(string tekst, Connection *conn) {
+    //TODO
+};
+
+void Decipher::a_err_usr_tag(string tekst, Connection *conn) {
     //TODO
 };
 
@@ -181,10 +189,14 @@ void Decipher::study(string komunikat, Connection * connection) {
         a_join_old(komunikat, connection);
     } else if (start == "ACK_TAG") {
         a_ack_tag(komunikat, connection);
+    } else if (start == "ACK_USR_TAG") {
+        a_ack_usr_tag(komunikat, connection);
     } else if (start == "ACK_PUB") {
         a_ack_pub(komunikat, connection);
     } else if (start == "ERR_TAG") {
         a_err_tag(komunikat, connection);
+    } else if (start == "ERR_USR_TAG") {
+        a_err_usr_tag(komunikat, connection);
     } else if (start == "ERR_PUB") {
         a_err_pub(komunikat, connection);
     } else if (start == "SUB") {
