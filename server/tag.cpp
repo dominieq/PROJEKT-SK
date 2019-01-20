@@ -4,7 +4,7 @@ list<Tag *> Tag::taglist;
 
 Tag::Tag(string name) {
     bool nowy = true;
-    for (auto v : taglist) {
+    for (auto *v : taglist) {
         if (v->get_tagname() == name) {
             nowy = false;
             break;
@@ -27,7 +27,7 @@ list<Tag *> Tag::get_taglist() {
 }
 
 Tag *Tag::get_tag(string t) {
-    for (auto v : Tag::get_taglist()) {
+    for (auto *v : Tag::get_taglist()) {
         if (v->get_tagname() == t) {
             return v;
         }

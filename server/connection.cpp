@@ -14,7 +14,7 @@ Connection::Connection(int server_socket_descriptor) {
 Connection::~Connection() {
     disable();
 
-    for(list<Connection*>::iterator it = connectionlist.begin(); it != connectionlist.end(); /*  */ ) {
+    for(auto it = connectionlist.begin(); it != connectionlist.end(); /*  */ ) {
         if (*it == this) {
             it = connectionlist.erase(it);
             break;

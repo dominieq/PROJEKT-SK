@@ -1,6 +1,7 @@
 #include "working.h"
 #include "socket.h"
 #include "connection.h"
+#include "testowanie.h"
 #include <iostream>
 
 using namespace std;
@@ -19,6 +20,10 @@ void Working::launch(int argc, char* argv[]) {
 }
 
 void Working::operation() {
+    thread t_init(Working::initialization);
+
+    t_init.detach();
+
     thread t_heeding(Working::heeding);
 
     t_heeding.detach();
@@ -41,4 +46,14 @@ void Working::heeding() {
         thread t(&Connection::s_read, new Connection(server_socket->s_get_server_socket_descriptor()));
         t.detach();
     }
+}
+
+void Working::initialization() {
+
+    new Tag("news");
+    new Tag("music");
+    new Tag("movies");
+    new Tag("art");
+    
+    Testowanie::test();
 }
