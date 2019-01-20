@@ -7,6 +7,9 @@
 using namespace std;
 
 class Tag {
+    /**
+     * nazwa tagu
+     */
     string tagname;
 
     /**

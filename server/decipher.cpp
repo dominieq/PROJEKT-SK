@@ -4,7 +4,7 @@
 
 string Decipher::part(string tekst, unsigned int p) {
     int licznik = 0, alpha = 0, beta = -1;
-    size_t pozycja = -1;
+    ssize_t pozycja = -1;
     while (licznik <= p) {
         pozycja = tekst.find(";", pozycja + 1);
         if (pozycja < tekst.size()) {
@@ -20,10 +20,26 @@ string Decipher::part(string tekst, unsigned int p) {
     return tekst.substr(alpha, beta - alpha);
 }
 
+string Decipher::pubprepare(Publication *p) {
+    string pub;
+    pub.append("PUB;");
+    pub.append(p->get_tag()->get_tagname());
+    pub.append(";");
+    pub.append(p->get_title());
+    pub.append(";");
+    pub.append(p->get_author()->get_nick());
+    pub.append(";");
+    pub.append(p->get_date_s());
+    pub.append(";");
+    pub.append(p->get_content());
+    pub.append(";END");
+    return pub;
+}
+
 void Decipher::a_join(string tekst, Connection *conn) {
-    if (tekst.substr(5,7) == "old;END" && User::get_userlist().size() == 0) {
+    if (tekst.substr(5,7) == "old;END" && User::get_userlist().empty()) {
         conn->s_write("ERR_JOIN;no_old;END");
-    } else if (tekst.substr(5,7) == "old;END" && User::get_userlist().size() > 0) {
+    } else if (tekst.substr(5,7) == "old;END" && !User::get_userlist().empty()) {
         conn->s_write("ACK_JOIN;old;END");
     } else if (tekst.substr(5,7) == "new;END") {
         conn->s_write("ACK_JOIN;new;END");
@@ -112,6 +128,8 @@ void Decipher::a_join_old(string tekst, Connection *conn) {
         tags.append("END");
         conn->s_write(tags);
 
+        publishing(user, conn);
+
     } else {
         conn->s_write("ERR_JOIN;wrong password;END");
     }
@@ -134,7 +152,7 @@ void Decipher::a_err_pub(string tekst, Connection *conn) {
 };
 
 void Decipher::a_sub(string tekst, Connection *conn) {
-    if (conn->get_user() == NULL) {
+    if (conn->get_user() == nullptr) {
         conn->s_write("ERR_SUB;user not logged in;END");
         return;
     }
@@ -160,6 +178,7 @@ void Decipher::a_sub(string tekst, Connection *conn) {
     } else if (way == "T") {
         conn->get_user()->add_sub(t);
         conn->s_write("ACK_SUB;T;" + tag + ";END");
+        publishing(t, conn);
     } else if (way == "F") {
         conn->get_user()->del_sub(t);
         conn->s_write("ACK_SUB;F;" + tag + ";END");
@@ -169,7 +188,7 @@ void Decipher::a_sub(string tekst, Connection *conn) {
 };
 
 void Decipher::a_send_pub(string tekst, Connection *conn) {
-    if (conn->get_user() == NULL) {
+    if (conn->get_user() == nullptr) {
         conn->s_write("ERR_SEND_PUB;user not logged in;END");
         return;
     }
@@ -195,7 +214,7 @@ void Decipher::a_send_pub(string tekst, Connection *conn) {
         conn->s_write("ERR_SEND_PUB;tag (" + tag + ") does not exist;END");
         //TODO tworzenie nowego?
     } else {
-        new Publication(t, title, conn->get_user(), content);
+        publishing(new Publication(t, title, conn->get_user(), content)); //TODO if doesn;t work
         conn->s_write("ACK_SEND_PUB;END");
     }
 };
@@ -232,6 +251,29 @@ void Decipher::study(string komunikat, Connection * connection) {
     } else if (start == "QQQ") {
         connection->s_write("ERROR;0"); //TODO
     } else {
-        connection->s_write("ERROR;BAD_TASK"); //TODO
+        connection->s_write("ERROR;BAD_TASK;END"); //TODO
+    }
+}
+
+void Decipher::publishing(Publication *p) {
+    string pub = Decipher::pubprepare(p);
+    for (auto *v : Connection::get_connectionlist()) {
+        if (v->get_user()->check_sub(p->get_tag())) {
+            v->s_write(pub);
+        }
+    }
+}
+
+void Decipher::publishing(Tag *t, Connection *conn) {
+    for (auto *v : Publication::get_publicationlist(t)) {
+        conn->s_write(Decipher::pubprepare(v));
+    }
+}
+
+void Decipher::publishing(User *u, Connection *conn) {
+    for (auto *v1 : u->get_sublist()) {
+        for (auto *v2 : Publication::get_publicationlist(v1)) {
+            conn->s_write(Decipher::pubprepare(v2));
+        }
     }
 }

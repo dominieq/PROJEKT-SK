@@ -40,7 +40,7 @@ list<Publication *> Publication::get_publicationlist() {
 
 list<Publication *> Publication::get_publicationlist(Tag *t) {
     list<Publication *> specified;
-    for (auto v : Publication::get_publicationlist()) {
+    for (auto *v : Publication::get_publicationlist()) {
         if (v->get_tag() == t) {
             specified.push_back(v);
         }

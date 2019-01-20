@@ -33,4 +33,5 @@
 
 server/\.idea/
 
-server/cmake-build-debug/
+
+server/cmake-build-debug/CMakeFiles/
