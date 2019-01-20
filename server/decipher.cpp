@@ -1,6 +1,7 @@
 #include "decipher.h"
 #include "user.h"
 #include "publication.h"
+#include "refreshing.h"
 
 string Decipher::part(string tekst, unsigned int p) {
     int licznik = 0, alpha = 0, beta = -1;
@@ -52,6 +53,10 @@ void Decipher::a_join_new(string tekst, Connection *conn) {
         User * user = new User(nick, password);
         conn->assign(user); //TODO
         conn->s_write("ACK_JOIN_NEW;END");
+
+        Refreshing::send_taglist(conn);
+        Refreshing::send_sublist(conn);
+        Refreshing::publishing(conn);
     }
 };
 
@@ -76,33 +81,13 @@ void Decipher::a_join_old(string tekst, Connection *conn) {
     } else if (user->check_password(password)){
         conn->assign(user); //TODO
         conn->s_write("ACK_JOIN_OLD;END");
+
+        Refreshing::send_taglist(conn);
+        Refreshing::send_sublist(conn);
+        Refreshing::publishing(conn);
     } else {
         conn->s_write("ERR_JOIN;wrong password;END");
     }
-};
-
-void Decipher::a_ack_tag(string tekst, Connection *conn) {
-    //TODO?
-};
-
-void Decipher::a_ack_usr_tag(string tekst, Connection *conn) {
-    //TODO?
-};
-
-void Decipher::a_ack_pub(string tekst, Connection *conn) {
-    //TODO
-};
-
-void Decipher::a_err_tag(string tekst, Connection *conn) {
-    //TODO
-};
-
-void Decipher::a_err_usr_tag(string tekst, Connection *conn) {
-    //TODO
-};
-
-void Decipher::a_err_pub(string tekst, Connection *conn) {
-    //TODO
 };
 
 void Decipher::a_sub(string tekst, Connection *conn) {
@@ -132,9 +117,12 @@ void Decipher::a_sub(string tekst, Connection *conn) {
     } else if (way == "T") {
         conn->get_user()->add_sub(t);
         conn->s_write("ACK_SUB;T;" + tag + ";END");
+        Refreshing::send_sublist(conn);
+        Refreshing::publishing(conn, t);
     } else if (way == "F") {
         conn->get_user()->del_sub(t);
         conn->s_write("ACK_SUB;F;" + tag + ";END");
+        Refreshing::send_sublist(conn);
     } else {
         conn->s_write("ERR_SUB;?????;END");
     }
@@ -167,7 +155,7 @@ void Decipher::a_send_pub(string tekst, Connection *conn) {
         conn->s_write("ERR_SEND_PUB;tag (" + tag + ") does not exist;END");
         //TODO tworzenie nowego?
     } else {
-        new Publication(t, title, conn->get_user(), content); //TODO if doesn;t work
+        Refreshing::publishing(new Publication(t, title, conn->get_user(), content)); //TODO if doesn;t work
         conn->s_write("ACK_SEND_PUB;END");
     }
 };
@@ -187,18 +175,6 @@ void Decipher::study(string komunikat, Connection * connection) {
         a_join_new(komunikat, connection);
     } else if (start == "JOIN_OLD") {
         a_join_old(komunikat, connection);
-    } else if (start == "ACK_TAG") {
-        a_ack_tag(komunikat, connection);
-    } else if (start == "ACK_USR_TAG") {
-        a_ack_usr_tag(komunikat, connection);
-    } else if (start == "ACK_PUB") {
-        a_ack_pub(komunikat, connection);
-    } else if (start == "ERR_TAG") {
-        a_err_tag(komunikat, connection);
-    } else if (start == "ERR_USR_TAG") {
-        a_err_usr_tag(komunikat, connection);
-    } else if (start == "ERR_PUB") {
-        a_err_pub(komunikat, connection);
     } else if (start == "SUB") {
         a_sub(komunikat, connection);
     } else if (start == "SEND_PUB") {

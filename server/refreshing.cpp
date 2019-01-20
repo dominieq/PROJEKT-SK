@@ -51,6 +51,23 @@ void Refreshing::publishing(Connection *conn) {
     }
 }
 
+void Refreshing::publishing(Connection *conn, Tag *t) {
+
+    for (auto *v : Publication::get_publicationlist(t)) {
+        conn->s_write(Refreshing::pubprepare(v));
+    }
+
+}
+
+void Refreshing::publishing(Publication *p) {
+    string pub = Refreshing::pubprepare(p);
+    for (auto *v : Connection::get_connectionlist()) {
+        if (v->get_user()->check_sub(p->get_tag())) {
+            v->s_write(pub);
+        }
+    }
+}
+
 
 
 //string user_tags = "USR_TAG;";

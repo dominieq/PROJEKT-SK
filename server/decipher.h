@@ -16,12 +16,6 @@ public: //TODO
     static void a_join(string, Connection *);
     static void a_join_new(string, Connection *);
     static void a_join_old(string, Connection *);
-    static void a_ack_tag(string, Connection *);
-    static void a_ack_usr_tag(string, Connection *);
-    static void a_ack_pub(string, Connection *);
-    static void a_err_tag(string, Connection *);
-    static void a_err_usr_tag(string, Connection *);
-    static void a_err_pub(string, Connection *);
     static void a_sub(string, Connection *);
     static void a_send_pub(string, Connection *);
     static void a_term(string, Connection *);
