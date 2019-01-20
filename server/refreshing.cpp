@@ -26,7 +26,7 @@ void Refreshing::send_taglist(Connection *conn) {
             tags.append(";NEXT;");
         }
     }
-    tags.append("END");
+    tags.append(";END");
     conn->s_write(tags);
 }
 
@@ -38,7 +38,7 @@ void Refreshing::send_sublist(Connection *conn) {
             user_tags.append(";NEXT;");
         }
     }
-    user_tags.append("END");
+    user_tags.append(";END");
     conn->s_write(user_tags);
 }
 
