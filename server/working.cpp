@@ -2,6 +2,7 @@
 #include "socket.h"
 #include "connection.h"
 #include "testowanie.h"
+#include "refreshing.h"
 #include <iostream>
 
 using namespace std;
@@ -27,6 +28,10 @@ void Working::operation() {
     thread t_heeding(Working::heeding);
 
     t_heeding.detach();
+
+    thread t_refreshing(Refreshing::refreshing);
+
+    t_refreshing.detach();
 }
 
 void Working::abolish() {

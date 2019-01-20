@@ -6,9 +6,9 @@ using namespace std;
 int main(int argc, char* argv[]) {
     cout << "Hello, World!" << endl;
 
-    //TODO wstępne tagi
-    //TODO publish
-    //TODO serializacja
+    //TODO wstępne tagi     OK:T
+    //TODO publish          OK:T
+    //TODO serializacja     -
     //TODO ...
 
     Working::launch(argc, argv);

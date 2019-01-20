@@ -105,6 +105,12 @@
 		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/publication.h">
 			<Option target="server"/>
 		</Unit>
+		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/refreshing.cpp">
+			<Option target="server"/>
+		</Unit>
+		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/refreshing.h">
+			<Option target="server"/>
+		</Unit>
 		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/socket.cpp">
 			<Option target="server"/>
 		</Unit>

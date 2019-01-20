@@ -13,6 +13,7 @@ class Working {
     static void heeding();
 
     static void initialization();
+
 public:
     static void launch(int, char* []);
 

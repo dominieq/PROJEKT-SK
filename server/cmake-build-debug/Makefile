@@ -231,6 +231,33 @@ publication.cpp.s:
 	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/publication.cpp.s
 .PHONY : publication.cpp.s
 
+refreshing.o: refreshing.cpp.o
+
+.PHONY : refreshing.o
+
+# target to build an object file
+refreshing.cpp.o:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/refreshing.cpp.o
+.PHONY : refreshing.cpp.o
+
+refreshing.i: refreshing.cpp.i
+
+.PHONY : refreshing.i
+
+# target to preprocess a source file
+refreshing.cpp.i:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/refreshing.cpp.i
+.PHONY : refreshing.cpp.i
+
+refreshing.s: refreshing.cpp.s
+
+.PHONY : refreshing.s
+
+# target to generate assembly for a file
+refreshing.cpp.s:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/refreshing.cpp.s
+.PHONY : refreshing.cpp.s
+
 socket.o: socket.cpp.o
 
 .PHONY : socket.o
@@ -387,6 +414,9 @@ help:
 	@echo "... publication.o"
 	@echo "... publication.i"
 	@echo "... publication.s"
+	@echo "... refreshing.o"
+	@echo "... refreshing.i"
+	@echo "... refreshing.s"
 	@echo "... socket.o"
 	@echo "... socket.i"
 	@echo "... socket.s"
