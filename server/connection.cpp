@@ -45,8 +45,7 @@ void Connection::s_read() {
     while (active) {
         if((dlugosc = read(connection_socket_descriptor, buffer, BUF_SIZE)) > 0) {
             buffer[dlugosc] = '\0';
-            cout << buffer << endl;
-            //TODO analiza
+            cout << buffer << endl; //TODO testowanie
             Decipher::study(buffer, this);
         } else {
             cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << endl;
@@ -58,9 +57,12 @@ void Connection::s_read() {
 }
 
 void Connection::s_write(string tresc) {
+    send.lock();
     write(connection_socket_descriptor, tresc.c_str(), tresc.size());
 
-    cout << "Wysłano: " << tresc << endl;
+    cout << "Wysłano: " << tresc << endl; //TODO testowanie
+    sleep(2);
+    send.unlock();
 }
 
 //TODO czy potrzebne?

@@ -155,8 +155,10 @@ void Decipher::a_send_pub(string tekst, Connection *conn) {
         conn->s_write("ERR_SEND_PUB;tag (" + tag + ") does not exist;END");
         //TODO tworzenie nowego?
     } else {
-        Refreshing::publishing(new Publication(t, title, conn->get_user(), content)); //TODO if doesn;t work
+        Publication * p = new Publication(t, title, conn->get_user(), content); //TODO if doesn;t work
         conn->s_write("ACK_SEND_PUB;END");
+        Refreshing::publishing(p); //TODO if doesn;t work
+
     }
 };
 

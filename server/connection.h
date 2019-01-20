@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include <mutex>
 #include "user.h"
 
 using namespace std;
@@ -17,6 +18,8 @@ class Connection {
 
     bool active;
     User *online;
+    mutex send;
+
 
     void s_accept(int);
 
