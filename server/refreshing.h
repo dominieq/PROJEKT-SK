@@ -22,7 +22,7 @@ public:
 
     static void publishing(Publication *);
 public:
-    static void refreshing();
+//    static void refreshing();
 
 };
 

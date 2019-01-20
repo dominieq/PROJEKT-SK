@@ -121,17 +121,17 @@ void Refreshing::publishing(Publication *p) {
 
 //--------------------------------//
 
-void Refreshing::refreshing() {
-    while (true) {
-        sleep(5);
-
-        for (auto *v : Connection::get_connectionlist()) {
-            if (v->get_user() != nullptr) {
-                send_taglist(v);
-                send_sublist(v);
-                publishing(v);
-            }
-        }
-        cout << "sleeep3" << endl;
-    }
-}
+//void Refreshing::refreshing() {
+//    while (true) {
+//        sleep(5);
+//
+//        for (auto *v : Connection::get_connectionlist()) {
+//            if (v->get_user() != nullptr) {
+//                send_taglist(v);
+//                send_sublist(v);
+//                publishing(v);
+//            }
+//        }
+////        cout << "sleeep3" << endl;
+//    }
+//}
