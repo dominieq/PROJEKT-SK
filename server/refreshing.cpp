@@ -19,11 +19,14 @@ string Refreshing::pubprepare(Publication *p) {
 
 
 void Refreshing::send_taglist(Connection *conn) {
+    ssize_t ile =  Tag::get_taglist().size();
     string tags = "TAG;";
     if (!Tag::get_taglist().empty()) {
         for (auto *v : Tag::get_taglist()) {
             tags.append(v->get_tagname());
-            tags.append(";NEXT;");
+            if (--ile) {
+                tags.append(";NEXT;");
+            }
         }
     }
     tags.append(";END");
@@ -31,11 +34,14 @@ void Refreshing::send_taglist(Connection *conn) {
 }
 
 void Refreshing::send_sublist(Connection *conn) {
+    ssize_t ile =  conn->get_user()->get_sublist().size();
     string user_tags = "USR_TAG;";
     if (!conn->get_user()->get_sublist().empty()) {
         for (auto *v : conn->get_user()->get_sublist()) {
             user_tags.append(v->get_tagname());
-            user_tags.append(";NEXT;");
+            if (--ile) {
+                user_tags.append(";NEXT;");
+            }
         }
     }
     user_tags.append(";END");

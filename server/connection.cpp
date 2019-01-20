@@ -59,6 +59,8 @@ void Connection::s_read() {
 
 void Connection::s_write(string tresc) {
     write(connection_socket_descriptor, tresc.c_str(), tresc.size());
+
+    cout << "Wysłano: " << tresc << endl;
 }
 
 //TODO czy potrzebne?
