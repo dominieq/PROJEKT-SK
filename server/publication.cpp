@@ -1,13 +1,14 @@
 #include "publication.h"
+#include <utility>
 
 list<Publication *> Publication::publicationlist;
 
 Publication::Publication(Tag *t, string s, User *u, string c) {
     tag = t;
-    title = s;
+    title = move(s);
     author = u;
     time (&date);
-    content = c;
+    content = move(c);
 
     publicationlist.push_back(this);
 }

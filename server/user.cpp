@@ -33,8 +33,8 @@ User::User(string n, string p) {
         }
     }
     if (nowy) {
-        nick = n;
-        password = p;
+        nick = move(n);
+        password = move(p);
         userlist.push_back(this);
     } else {
         delete this;
@@ -46,11 +46,7 @@ string User::get_nick() {
 }
 
 bool User::check_password(string p) {
-    if (password == p) {
-        return true;
-    } else {
-        return false;
-    }
+    return password == p;
 }
 
 list<Tag *> User::get_sublist() {

@@ -33,7 +33,7 @@ class Socket {
 
 public:
 
-    Socket(int);
+    explicit Socket(int);
 
     ~Socket();
 

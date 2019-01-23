@@ -4,8 +4,8 @@
 #include "refreshing.h"
 
 string Decipher::part(string tekst, unsigned int p) {
-    int licznik = 0, alpha = 0, beta = -1;
-    ssize_t pozycja = -1;
+    size_t licznik = 0, alpha = 0, beta = -1;
+    size_t pozycja = -1;
     while (licznik <= p) {
         pozycja = tekst.find(";", pozycja + 1);
         if (pozycja < tekst.size()) {
@@ -67,16 +67,18 @@ void Decipher::a_join_old(string tekst, Connection *conn) {
         conn->s_write("ERR_JOIN;fields_problem;END"); //TODO
         return;
     }
-    bool istnieje = false;
-    User * user;
-    for (auto v : User::get_userlist()) {
-        if (v->get_nick() == nick) {
-            istnieje = true;
-            user = v;
-            break;
-        }
-    }
-    if (!istnieje) {
+//    bool istnieje = false;
+//    User * user;
+//    for (auto v : User::get_userlist()) {
+//        if (v->get_nick() == nick) {
+//            istnieje = true;
+//            user = v;
+//            break;
+//        }
+//    }
+    User * user = User::get_user(nick);
+//    if (!istnieje) {
+    if (user == nullptr) {
         conn->s_write("ERR_JOIN;user (" + nick + ") does not exist;END");
     } else if (user->check_password(password)){
         conn->assign(user); //TODO
@@ -101,18 +103,20 @@ void Decipher::a_sub(string tekst, Connection *conn) {
         conn->s_write("ERR_SUB;fields_problem;END"); //TODO
         return;
     }
-    bool istnieje = false;
-    Tag * t;
-    if (!Tag::get_taglist().empty()) {
-        for (auto v : Tag::get_taglist()) {
-            if (v->get_tagname() == tag) {
-                istnieje = true;
-                t = v;
-                break;
-            }
-        }
-    }
-    if (!istnieje) {
+//    bool istnieje = false;
+//    Tag * t;
+//    if (!Tag::get_taglist().empty()) {
+//        for (auto v : Tag::get_taglist()) {
+//            if (v->get_tagname() == tag) {
+//                istnieje = true;
+//                t = v;
+//                break;
+//            }
+//        }
+//    }
+    Tag * t = Tag::get_tag(tag);
+    if (t == nullptr) {
+//    if (!istnieje) {
         conn->s_write("ERR_SUB;tag (" + tag + ") does not exist;END");
     } else if (way == "T") {
         conn->get_user()->add_sub(t);
@@ -140,18 +144,20 @@ void Decipher::a_send_pub(string tekst, Connection *conn) {
         conn->s_write("ERR_SEND_PUB;fields_problem;END"); //TODO
         return;
     }
-    bool istnieje = false;
-    Tag * t;
-    if (!Tag::get_taglist().empty()) {
-        for (auto v : Tag::get_taglist()) {
-            if (v->get_tagname() == tag) {
-                istnieje = true;
-                t = v;
-                break;
-            }
-        }
-    }
-    if (!istnieje) {
+//    bool istnieje = false;
+//    Tag * t;
+//    if (!Tag::get_taglist().empty()) {
+//        for (auto v : Tag::get_taglist()) {
+//            if (v->get_tagname() == tag) {
+//                istnieje = true;
+//                t = v;
+//                break;
+//            }
+//        }
+//    }
+    Tag * t = Tag::get_tag(tag);
+//    if (!istnieje) {
+    if (t == nullptr) {
         conn->s_write("ERR_SEND_PUB;tag (" + tag + ") does not exist;END");
         //TODO tworzenie nowego?
     } else {
@@ -162,7 +168,7 @@ void Decipher::a_send_pub(string tekst, Connection *conn) {
     }
 };
 
-void Decipher::a_term(string tekst, Connection *conn) {
+void Decipher::a_term(Connection *conn) {
     conn->s_write("ACK_TERM;END");
     conn->disable();
 };
@@ -182,7 +188,7 @@ void Decipher::study(string komunikat, Connection * connection) {
     } else if (start == "SEND_PUB") {
         a_send_pub(komunikat, connection);
     } else if (start == "TERM") {
-        a_term(komunikat, connection);
+        a_term(connection);
     } else if (start == "QQQ") {
         connection->s_write("ERROR;0"); //TODO
     } else {

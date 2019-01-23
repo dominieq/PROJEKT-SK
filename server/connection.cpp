@@ -29,7 +29,7 @@ Connection::~Connection() {
 
 void Connection::s_accept(int server_socket_descriptor) {
     cout << "OK: Serwer czeka na klienta." << endl;
-    connection_socket_descriptor = accept(server_socket_descriptor, NULL, NULL);
+    connection_socket_descriptor = accept(server_socket_descriptor, nullptr, nullptr);
     if (connection_socket_descriptor < 0) {
         cout << stderr << ": Błąd przy próbie utworzenia gniazda dla połączenia." << endl;
         exit(2);
@@ -49,7 +49,7 @@ void Connection::s_read() {
             Decipher::study(buffer, this);
         } else {
             cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << endl;
-            active = false;
+            this->disable();
         }
 
     }
