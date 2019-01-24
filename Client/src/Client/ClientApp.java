@@ -29,11 +29,11 @@ public class ClientApp extends Application {
     private RootLayoutController rootLayoutController;
     private ApplicationLayoutController applicationLayoutController;
     private Thread appThread;
-    private volatile Socket clientSocket;
+    private Socket clientSocket;
     private Boolean clearToCloseBoolean;
-    private ObservableList<Tag> tagObservableList;
-    private ObservableList<Tag> userTagObservableList;
-    private ObservableList<Publication> publicationObservableList;
+    private volatile ObservableList<Tag> tagObservableList;
+    private volatile ObservableList<Tag> userTagObservableList;
+    private volatile ObservableList<Publication> publicationObservableList;
 
     @Override public void start(Stage primaryStage) {
 
@@ -77,7 +77,6 @@ public class ClientApp extends Application {
 
             WelcomePageLayoutController controller = loader.getController();
             controller.setApp(this);
-            controller.setUp();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -93,7 +92,6 @@ public class ClientApp extends Application {
 
             LogInLayoutController controller = loader.getController();
             controller.setApp(this);
-            controller.setUp();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -128,7 +126,7 @@ public class ClientApp extends Application {
     }
 
 
-    public synchronized String receiveMessage() {
+    public synchronized String receiveMessage(String stage) {
 
         // TODO
         // Function should manage incomplete messages
@@ -154,6 +152,8 @@ public class ClientApp extends Application {
 
         }
         msg = new String(buffer);
+        System.out.println(stage + msg);
+
         String[] parts = msg.split(";END");
         msg = parts[0] + ";END";
         return msg;
@@ -165,7 +165,7 @@ public class ClientApp extends Application {
             OutputStream os = this.clientSocket.getOutputStream();
             os.write(msg.getBytes());
         } catch (IOException exception) {
-            exception.printStackTrace();
+
             return false;
         }
         return true;

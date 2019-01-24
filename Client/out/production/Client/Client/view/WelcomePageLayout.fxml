@@ -13,12 +13,7 @@
             <Font size="30.0" />
          </font>
       </Label>
-    <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleLogIn" prefHeight="60.0" prefWidth="180.0" text="Log in" AnchorPane.bottomAnchor="530.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="300.0">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Button>
-      <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleRegister" prefHeight="60.0" prefWidth="180.0" text="Register" AnchorPane.bottomAnchor="430.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="400.0">
+    <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleLogIn" prefHeight="60.0" prefWidth="180.0" text="Log in" AnchorPane.bottomAnchor="490.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="460.0" AnchorPane.topAnchor="300.0">
          <font>
             <Font size="20.0" />
          </font>

@@ -85,9 +85,9 @@ public class RootLayoutController {
     private Boolean logOut() {
 
         this.app.sendMessage("TERM;END");
-        String ans = this.app.receiveMessage();
+        String ans = this.app.receiveMessage("Logging out: ");
 
-        if (ans.startsWith("ACK_TERM")) {
+        if (ans.startsWith("ACK_TERM;")) {
 
             /*Server acknowledged our request and we can exit application*/
             if (!endApplicationLayoutControllerThread()) {
