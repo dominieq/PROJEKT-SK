@@ -59,6 +59,11 @@ void Working::initialization() {
     new Tag("music");
     new Tag("movies");
     new Tag("art");
+
+    new Tag("games");
+    new Tag("events");
+    new Tag("cats");
+    new Tag("dogs");
     
     Testowanie::test();
 }

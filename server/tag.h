@@ -18,7 +18,7 @@ class Tag {
     static list<Tag *> taglist;
 
 public:
-    Tag(string);
+    explicit Tag(string);
 
     /**
      * Pobranie nazwy tagu.
