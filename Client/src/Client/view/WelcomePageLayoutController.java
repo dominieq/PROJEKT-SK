@@ -33,22 +33,48 @@ public class WelcomePageLayoutController {
     @FXML
     private void handleLogIn () {
 
-        this.connect("JOIN;new;END");
+        if (connect()) {
+
+            this.app.sendMessage("JOIN;END");
+            String ans = this.app.receiveMessage("Joining: ");
+
+            if(ans.startsWith("ACK_JOIN;")) {
+
+                this.app.showLogInLayout();
+
+            }
+            else if (ans.startsWith("ERR_JOIN;")) {
+
+                String error = ans.split(";")[1];
+                this.warningLabel.setText(error);
+                this.warningLabel.setVisible(true);
+
+            }
+            else if (ans.equals("TIMEOUT_ERROR")) {
+
+                this.warningLabel.setText("Couldn't reach server. Please try again.");
+                this.warningLabel.setVisible(true);
+
+            }
+            else if (ans.equals("READ_ERROR")) {
+
+                this.warningLabel.setText("Connection lost.");
+                this.warningLabel.setVisible(true);
+                this.addressTextField.clear();
+                this.portTextField.clear();
+
+            }
+
+        }
 
     }
 
     /**
-     * Sends message to server that user wants to register
+     * Takes address and port number from TextFields and
+     * uses them to connect to server
+     * @return Boolean value
      */
-    @FXML
-    private void handleRegister () {
-
-        this.connect("JOIN;new;END");
-
-    }
-
-    private void connect(String msg) {
-
+    private Boolean connect() {
         String addr = addressTextField.getText();
         String port = portTextField.getText();
 
@@ -65,8 +91,7 @@ public class WelcomePageLayoutController {
             }
 
             this.app.getClientSocket().setSoTimeout(5000);
-            this.app.sendMessage(msg);
-            this.app.showLogInLayout();
+
 
         } catch (Exception exception) {
 
@@ -88,9 +113,12 @@ public class WelcomePageLayoutController {
             else {
                 this.warningLabel.setText("Server not responding, try again.");
                 this.warningLabel.setVisible(true);
+                this.addressTextField.clear();
+                this.portTextField.clear();
             }
-
+            return false;
         }
+        return true;
     }
 
     /**
@@ -106,12 +134,6 @@ public class WelcomePageLayoutController {
      */
     public void setApp(ClientApp app) {
         this.app = app;
-    }
-
-    /**
-     * Sets log out MenuItem and SeparatorMenuItem to invisible. We won't need that option in current window
-     */
-    public void setUp() {
         this.app.getRootLayoutController().setInvisible();
     }
 }
