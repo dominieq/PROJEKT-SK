@@ -60,7 +60,7 @@ public class ApplicationLayoutController implements Runnable {
      */
     @Override public void run() {
         while(this.active) {
-            String ans = this.app.receiveMessage("Thread: ");
+            String ans = this.app.messageStation("rcv", "Thread: ");
             interpretAnswer(ans);
         }
     }
@@ -79,13 +79,13 @@ public class ApplicationLayoutController implements Runnable {
      */
     private void interpretAnswer(String ans) {
 
-        if(ans.startsWith("TAG")) {
+        if(ans.startsWith("TAG;")) {
             refreshTagList(ans);
         }
-        else if(ans.startsWith("USR_TAG")) {
+        else if(ans.startsWith("USR_TAG;")) {
             refreshUserTagList(ans);
         }
-        else if(ans.startsWith("PUB")) {
+        else if(ans.startsWith("PUB;")) {
             refreshPublicationList(ans);
         }
         else if(ans.equals("TIMEOUT_ERROR")) {
@@ -103,12 +103,12 @@ public class ApplicationLayoutController implements Runnable {
 
     private void earlyExit() {
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (InterruptedException ignored) { }
         try {
             this.terminate();
             this.app.getAppThread().join();
-            this.app.getPrimaryStage().close();
+            this.app.showWelcomePageLayout();
         } catch (InterruptedException ignored) { }
     }
 
@@ -158,17 +158,21 @@ public class ApplicationLayoutController implements Runnable {
         if(tag != null) {
              tagName = tag.getNameProperty().get();
         }
-        this.app.sendMessage("SEND_PUB;" + tagName + ";" + title + ";" + content + ";END");
+        String msg = "SEND;" + tagName + ";" + title + ";" + content + ";END";
+        this.app.messageStation("snd", msg);
+        this.userWarningLabel.setVisible(false);
+        String ans =  this.app.messageStation("rcv", "Submit button: ");
 
-        String ans =  this.app.receiveMessage("Submit button: ");
-
-        if(ans.startsWith("ACK_SEND_PUB;")) {
+        if(ans.startsWith("ACK_SEND;")) {
             this.userTitleTextField.clear();
             this.userCommentTextArea.clear();
         }
-        else if (ans.startsWith("ERR_SEND_PUB;")) {
-            String[] parts = ans.split(";");
-            this.userWarningLabel.setText(parts[1]);
+        else if (ans.startsWith("ERR_SEND;")) {
+            String error = ans.split(";")[1];
+            this.userWarningLabel.setText(error);
+            this.userWarningLabel.setVisible(true);
+            this.userTitleTextField.clear();
+            this.userCommentTextArea.clear();
         }
         else if (ans.equals("TIMEOUT_ERROR")) {
             this.userWarningLabel.setText("Couldn't reach server. Please try again");
@@ -177,6 +181,7 @@ public class ApplicationLayoutController implements Runnable {
         else if (ans.equals("READ_ERROR")) {
             this.userWarningLabel.setText("Connection lost");
             this.userWarningLabel.setVisible(true);
+            earlyExit();
         }
 
     }
@@ -195,16 +200,16 @@ public class ApplicationLayoutController implements Runnable {
         Tag tag = this.subTableView.getSelectionModel().getSelectedItem();
         if (tag != null) {
             String name = tag.getNameProperty().get();
-            this.app.sendMessage("SUB;T;" + name + ";END");
+            this.app.messageStation("snd", "SUB_ADD;" + name + ";END");
         }
         else {
-            this.app.sendMessage("SUB;T;;END");
+            this.app.messageStation("snd", "SUB_ADD;;END");
         }
-
-        String ans = this.app.receiveMessage("Add sub button: ");
+        this.subWarningLabel.setVisible(false);
+        String ans = this.app.messageStation("rcv", "Add sub button: ");
         if(ans.startsWith("ACK_SUB;") && tag != null) {
             tag.getButton().setDisable(true);
-            tag.getButton().setVisible(true);
+            tag.getButton().setVisible(false);
         }
         else {
             handleSubMessages(ans);
@@ -214,10 +219,10 @@ public class ApplicationLayoutController implements Runnable {
     /**
      * Handles action when unsubscribeButton was clicked.
      * Sends message to server:
-     *     "SUB;F;<name>;END" which means user wants to unsubscribe currently marked tag
+     *     "SUB_DEL;<name>;END" which means user wants to unsubscribe currently marked tag
      * Receives message from server:
-     *     "ACK_SUB;F;END" which means tag was discarded from user's tag list
-     *     "ERR_SUB;F;<error>;END" which means an error occurred. Error is displayed.
+     *     "ACK_SUB;<name>;END" which means tag was discarded from user's tag list
+     *     "ERR_SUB;<error>;END" which means an error occurred. Error is displayed.
      * Calls handleSubMessages to interpret other answers
      */
     @FXML public void handleDiscardSubButton() {
@@ -225,16 +230,27 @@ public class ApplicationLayoutController implements Runnable {
         Tag tag = this.subUsersTableView.getSelectionModel().getSelectedItem();
         if(tag != null) {
             String name = tag.getNameProperty().get();
-            this.app.sendMessage("SUB;F;" + name + ";END");
+            this.app.messageStation("snd", "SUB_DEL;" + name + ";END");
         }
         else {
-            this.app.sendMessage("SUB;F;;END");
+            this.app.messageStation("snd", "SUB_DEL;;END");
         }
+        this.subWarningLabel.setVisible(false);
+        String ans = this.app.messageStation("rcv", "Discard sub button: ");
+        if(ans.startsWith("ACK_SUB;") && tag != null) {
 
-        String ans = this.app.receiveMessage("Discard sub button: ");
-        if(ans.startsWith("ACK_SUB;F;") && tag != null) {
-            tag.getButton().setDisable(true);
-            tag.getButton().setVisible(true);
+            String name = ans.split(";")[1];
+            for(Tag usrTag : this.app.getTagObservableList()) {
+
+                if (usrTag.getNameProperty().get().equals(name)) {
+
+                    usrTag.getButton().setVisible(true);
+                    usrTag.getButton().setDisable(false);
+
+                }
+
+            }
+
         }
         else {
             handleSubMessages(ans);
@@ -248,9 +264,9 @@ public class ApplicationLayoutController implements Runnable {
      * @param ans answer received from server
      */
     private void handleSubMessages(String ans) {
-        if(ans.startsWith("ERR_SUB")) {
-            String[] parts = ans.split(";");
-            this.subWarningLabel.setText(parts[1]);
+        if(ans.startsWith("ERR_SUB;")) {
+            String error = ans.split(";")[1];
+            this.subWarningLabel.setText(error);
             this.subWarningLabel.setVisible(true);
         }
         else if(ans.equals("TIMEOUT_ERROR")) {
@@ -260,6 +276,7 @@ public class ApplicationLayoutController implements Runnable {
         else if(ans.equals("READ_ERROR")) {
             this.subWarningLabel.setText("Connection lost.");
             this.subWarningLabel.setVisible(true);
+            earlyExit();
         }
     }
 
@@ -297,17 +314,24 @@ public class ApplicationLayoutController implements Runnable {
      * Interprets answer from server with prefix "USR_TAG" which means server sent us the list
      * of current user tags. Each tag contains TAG's name. Function calls splitTags and transfers
      * received answer without prefix and suffix and "Unsubscribe" string.
-     * @param msg answer received from server
+     * @param usrTags answer received from server
      */
-    private void refreshUserTagList(String msg) {
-        if(msg.equals("USR_TAG;;END")) {
+    private void refreshUserTagList(String usrTags) {
+        if(usrTags.equals("USR_TAG;;END")) {
             this.app.getUserTagObservableList().clear();
+            this.app.getChoiceBoxTagsObservableList().clear();
         } else {
-            msg = msg.split("USR_TAG;")[1];
-            msg = msg.split(";END")[0];
+            usrTags = usrTags.split("USR_TAG;")[1];
+            usrTags = usrTags.split(";END")[0];
+            String choiceBoxTags = usrTags;
 
             this.app.getUserTagObservableList().clear();
-            this.app.getUserTagObservableList().addAll(splitTags(msg, "Unsubscribe"));
+            this.app.getUserTagObservableList().addAll(splitTags(usrTags, "Unsubscribe"));
+
+            this.app.getChoiceBoxTagsObservableList().clear();
+            this.app.getChoiceBoxTagsObservableList().addAll(splitTags(choiceBoxTags, "Unsubscribe"));
+
+
         }
 
     }
@@ -373,7 +397,7 @@ public class ApplicationLayoutController implements Runnable {
         this.subTableView.setItems(this.app.getTagObservableList());
         this.subUsersTableView.setItems(this.app.getUserTagObservableList());
         this.commentTableView.setItems(this.app.getPublicationObservableList());
-        this.userTagChoiceBox.setItems(this.app.getUserTagObservableList());
+        this.userTagChoiceBox.setItems(this.app.getChoiceBoxTagsObservableList());
     }
 
 }

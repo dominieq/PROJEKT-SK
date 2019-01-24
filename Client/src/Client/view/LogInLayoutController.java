@@ -39,10 +39,10 @@ public class LogInLayoutController {
         String pass = this.passwordField.getText();
 
         /*Send nick and password to server*/
-        this.app.sendMessage("LOG;" + nick + ";" + pass + ";END");
+        this.app.messageStation("snd", "LOG;" + nick + ";" + pass + ";END");
 
         /*Receive information from server and interpret it*/
-        String ans = this.app.receiveMessage("Logging in: ");
+        String ans = this.app.messageStation("rcv", "Logging in: ");
 
         if(ans.startsWith("ACK_LOG;")) {
 

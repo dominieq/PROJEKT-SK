@@ -32,7 +32,8 @@ public class ClientApp extends Application {
     private Socket clientSocket;
     private Boolean clearToCloseBoolean;
     private volatile ObservableList<Tag> tagObservableList;
-    private volatile ObservableList<Tag> userTagObservableList;
+    private ObservableList<Tag> userTagObservableList;
+    private ObservableList<Tag> choiceBoxTagsObservableList;
     private volatile ObservableList<Publication> publicationObservableList;
 
     @Override public void start(Stage primaryStage) {
@@ -44,7 +45,7 @@ public class ClientApp extends Application {
 
     }
 
-    public void initRootLayout() {
+    private void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/RootLayout.fxml"));
@@ -60,6 +61,7 @@ public class ClientApp extends Application {
             this.tagObservableList = FXCollections.observableArrayList();
             this.userTagObservableList = FXCollections.observableArrayList();
             this.publicationObservableList = FXCollections.observableArrayList();
+            this.choiceBoxTagsObservableList = FXCollections.observableArrayList();
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -126,27 +128,39 @@ public class ClientApp extends Application {
     }
 
 
-    public synchronized String receiveMessage(String stage) {
+    public synchronized String messageStation(String action, String msg) {
+        String ans = "";
+        if(action.equals("snd")) {
+            sendMessage(msg);
+        }
+        else if(action.equals("rcv")){
+            ans = receiveMessage(msg);
+        }
+        return ans;
+    }
 
-        // TODO
-        // Function should manage incomplete messages
-        // Receives wrong messages
+    private String receiveMessage(String stage) {
 
         String msg;
         byte[] buffer = new byte[5000];
         try {
 
             InputStream is = this.clientSocket.getInputStream();
-            is.read(buffer);
+            if(is.read(buffer) == -1) {
+                throw new IOException();
+            }
 
         } catch (IOException exception) {
 
             if(exception instanceof SocketTimeoutException) {
                 /*Timeout was exceeded and read function didn't receive any message*/
+                System.out.println(stage + "TIMEOUT_ERROR");
                 return "TIMEOUT_ERROR";
             }
             else {
                 /*Any other possible error that may occur when using read function*/
+                System.out.println(stage + "READ_ERROR");
+                this.clientSocket = null;
                 return "READ_ERROR";
             }
 
@@ -159,16 +173,15 @@ public class ClientApp extends Application {
         return msg;
     }
 
-    public synchronized Boolean sendMessage(String msg) {
+    private void sendMessage(String msg) {
 
         try {
             OutputStream os = this.clientSocket.getOutputStream();
+            System.out.println("Sending: " + msg);
             os.write(msg.getBytes());
-        } catch (IOException exception) {
-
-            return false;
+        } catch (IOException ignored) {
+            System.out.println("Sending failed msg = " + msg);
         }
-        return true;
 
     }
 
@@ -227,12 +240,15 @@ public class ClientApp extends Application {
         return tagObservableList;
     }
 
+    public ObservableList<Tag> getUserTagObservableList() {
+        return userTagObservableList;
+    }
+
+    public ObservableList<Tag> getChoiceBoxTagsObservableList() {
+        return choiceBoxTagsObservableList;
+    }
 
     public ObservableList<Publication> getPublicationObservableList() {
         return publicationObservableList;
-    }
-
-    public ObservableList<Tag> getUserTagObservableList() {
-        return userTagObservableList;
     }
 }

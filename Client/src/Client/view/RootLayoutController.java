@@ -84,8 +84,8 @@ public class RootLayoutController {
      */
     private Boolean logOut() {
 
-        this.app.sendMessage("TERM;END");
-        String ans = this.app.receiveMessage("Logging out: ");
+        this.app.messageStation("snd", "TERM;END");
+        String ans = this.app.messageStation("rcv", "Logging out: ");
 
         if (ans.startsWith("ACK_TERM;")) {
 
@@ -97,11 +97,10 @@ public class RootLayoutController {
                 return false;
             }
 
-        } else if (ans.startsWith("ERR_TERM")) {
+        } else if (ans.startsWith("ERR_TERM;")) {
 
-            String[] parts = ans.split(";");
             String title = "Server error!";
-            String error = parts[1];
+            String error = ans.split(";")[1];
             this.app.showError(title, error);
             return false;
 

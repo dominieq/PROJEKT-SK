@@ -33,10 +33,11 @@ public class WelcomePageLayoutController {
     @FXML
     private void handleLogIn () {
 
-        if (connect()) {
+        if(connect()){
 
-            this.app.sendMessage("JOIN;END");
-            String ans = this.app.receiveMessage("Joining: ");
+            this.app.messageStation("snd", "JOIN;END");
+            this.warningLabel.setVisible(false);
+            String ans = this.app.messageStation("rcv", "Joining: ");
 
             if(ans.startsWith("ACK_JOIN;")) {
 
@@ -75,6 +76,11 @@ public class WelcomePageLayoutController {
      * @return Boolean value
      */
     private Boolean connect() {
+
+        if (this.app.getClientSocket() != null && this.app.getClientSocket().isConnected()) {
+            return true;
+        }
+
         String addr = addressTextField.getText();
         String port = portTextField.getText();
 
