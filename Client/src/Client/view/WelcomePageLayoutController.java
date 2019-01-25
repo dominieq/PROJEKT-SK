@@ -35,9 +35,11 @@ public class WelcomePageLayoutController {
 
         if(connect()){
 
-            this.app.messageStation("snd", "JOIN;END");
+            String[] actions = {"snd", "rcv"};
+            String[] messages = {"JOIN;END", "Joining: "};
+
+            String ans = this.app.messageStation(actions, messages);
             this.warningLabel.setVisible(false);
-            String ans = this.app.messageStation("rcv", "Joining: ");
 
             if(ans.startsWith("ACK_JOIN;")) {
 
@@ -96,7 +98,7 @@ public class WelcomePageLayoutController {
                 this.app.setClientSocket( new Socket( addr, Integer.parseInt(port)) );
             }
 
-            this.app.getClientSocket().setSoTimeout(5000);
+            this.app.getClientSocket().setSoTimeout(10000);
 
 
         } catch (Exception exception) {

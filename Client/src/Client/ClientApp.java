@@ -32,8 +32,8 @@ public class ClientApp extends Application {
     private Socket clientSocket;
     private Boolean clearToCloseBoolean;
     private volatile ObservableList<Tag> tagObservableList;
-    private ObservableList<Tag> userTagObservableList;
-    private ObservableList<Tag> choiceBoxTagsObservableList;
+    private volatile ObservableList<Tag> userTagObservableList;
+    private volatile ObservableList<Tag> choiceBoxTagsObservableList;
     private volatile ObservableList<Publication> publicationObservableList;
 
     @Override public void start(Stage primaryStage) {
@@ -128,14 +128,19 @@ public class ClientApp extends Application {
     }
 
 
-    public synchronized String messageStation(String action, String msg) {
+    public synchronized String messageStation(String[] actions, String[] msgs) {
         String ans = "";
-        if(action.equals("snd")) {
-            sendMessage(msg);
+        for (int i = 0; i < actions.length; i++) {
+
+            if(actions[i].equals("snd")) {
+                sendMessage(msgs[i]);
+            }
+            else if(actions[i].equals("rcv")){
+                ans = receiveMessage(msgs[i]);
+            }
+
         }
-        else if(action.equals("rcv")){
-            ans = receiveMessage(msg);
-        }
+
         return ans;
     }
 

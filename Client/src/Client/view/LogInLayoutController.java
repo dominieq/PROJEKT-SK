@@ -38,11 +38,11 @@ public class LogInLayoutController {
         String nick = this.nickTextField.getText();
         String pass = this.passwordField.getText();
 
-        /*Send nick and password to server*/
-        this.app.messageStation("snd", "LOG;" + nick + ";" + pass + ";END");
+        String[] actions = {"snd", "rcv"};
+        String[] messages = {"LOG;" + nick.length() + ";" + nick + ";" + pass.length() + ";" + pass + ";END",
+                "Logging in: "};
 
-        /*Receive information from server and interpret it*/
-        String ans = this.app.messageStation("rcv", "Logging in: ");
+        String ans = this.app.messageStation(actions, messages);
 
         if(ans.startsWith("ACK_LOG;")) {
 

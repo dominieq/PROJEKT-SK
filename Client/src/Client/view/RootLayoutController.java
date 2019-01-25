@@ -84,8 +84,10 @@ public class RootLayoutController {
      */
     private Boolean logOut() {
 
-        this.app.messageStation("snd", "TERM;END");
-        String ans = this.app.messageStation("rcv", "Logging out: ");
+        String[] actions = {"snd", "rcv"};
+        String[] messages = {"TERM;END", "Logging out: "};
+
+        String ans = this.app.messageStation(actions, messages);
 
         if (ans.startsWith("ACK_TERM;")) {
 
