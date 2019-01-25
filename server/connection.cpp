@@ -134,7 +134,6 @@ void Connection::s_read() {
         cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << " powód: " << e.what() << endl;
         this->disable();
     } catch (...) {
-        cout << " COŚ INNEGO" << endl;
         this->disable();
     }
 
