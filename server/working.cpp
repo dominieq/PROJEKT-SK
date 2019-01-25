@@ -29,9 +29,6 @@ void Working::operation() {
 
     t_heeding.detach();
 
-//    thread t_refreshing(Refreshing::refreshing);
-//
-//    t_refreshing.detach();
 }
 
 void Working::abolish() {
@@ -65,5 +62,5 @@ void Working::initialization() {
     new Tag("cats");
     new Tag("dogs");
     
-    Testowanie::test();
+//    Testowanie::test();
 }

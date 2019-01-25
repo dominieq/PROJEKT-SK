@@ -3,18 +3,34 @@
 
 #include <iostream>
 #include <list>
+#include <mutex>
 #include "tag.h"
 
 using namespace std;
 
 class User {
+    /**
+     * Nick użytkownika.
+     */
     string nick;
+
+    /**
+     * Hasło użytkownika.
+     */
     string password;
 
+    /**
+     * Lista tagów użytkownika.
+     */
     list<Tag *> sublist;
 
     /**
-     * statyczna lista zawierająca wszystkich utworzonych użytkownikow
+     * Mutex na tworzenie nowych obiektów klasy User.
+     */
+    static mutex creating;
+
+    /**
+     * Statyczna lista zawierająca wszystkich utworzonych użytkownikow.
      */
     static list<User *> userlist;
 

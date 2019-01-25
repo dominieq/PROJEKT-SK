@@ -4,16 +4,25 @@
 #include <sys/socket.h>
 
 list<Connection *> Connection::connectionlist;
+mutex Connection::creating;
 
 Connection::Connection(int server_socket_descriptor) {
+    creating.lock();
     s_accept(server_socket_descriptor);
-    connectionlist.push_back(this);
-    cout << "OK: Połączono klienta." << endl;
+    if (connectionlist.size() >= CONNECTIONS_LIMIT) {
+        cout << "Nadmiarowy client." << endl;
+        active = false;
+        delete this;
+    } else {
+        active = true;
+        connectionlist.push_back(this);
+        cout << "OK: Połączono klienta." << endl;
+    }
+
+    creating.unlock();
 }
 
 Connection::~Connection() {
-    disable();
-
     for(auto it = connectionlist.begin(); it != connectionlist.end(); /*  */ ) {
         if (*it == this) {
             it = connectionlist.erase(it);
@@ -23,8 +32,8 @@ Connection::~Connection() {
         }
     }
 
-    cout << "OK: Zamknięcie połączenia csd: " << connection_socket_descriptor << endl;
     close(connection_socket_descriptor);
+    cout << "OK: Zamknięcie połączenia csd: " << connection_socket_descriptor << endl;
 }
 
 void Connection::s_accept(int server_socket_descriptor) {
@@ -41,7 +50,6 @@ int Connection::s_get_connection_socket_descriptor() {
 }
 
 void Connection::s_read() {
-    active = true;
     while (active) {
         if((dlugosc = read(connection_socket_descriptor, buffer, BUF_SIZE)) > 0) {
             buffer[dlugosc] = '\0';
@@ -51,9 +59,7 @@ void Connection::s_read() {
             cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << endl;
             this->disable();
         }
-
     }
-    delete this;
 }
 
 void Connection::s_write(string tresc) {
@@ -65,9 +71,9 @@ void Connection::s_write(string tresc) {
     send.unlock();
 }
 
-//TODO czy potrzebne?
 void Connection::disable() {
     active = false;
+    delete this;
 }
 
 list<Connection *> Connection::get_connectionlist() {
