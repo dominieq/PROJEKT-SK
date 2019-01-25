@@ -91,6 +91,10 @@ public class RootLayoutController {
 
         if (ans.startsWith("ACK_TERM;")) {
 
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
             /*Server acknowledged our request and we can exit application*/
             if (!endApplicationLayoutControllerThread()) {
                 String title = "Thread error!";
