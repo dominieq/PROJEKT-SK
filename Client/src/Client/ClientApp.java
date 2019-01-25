@@ -178,7 +178,9 @@ public class ClientApp extends Application {
 
             if (exception instanceof SocketTimeoutException) {
                 /*Timeout was exceeded and read function didn't receive any message*/
-                System.out.println(stage + "TIMEOUT_ERROR");
+                if(!stage.startsWith("Thread")) {
+                    System.out.println(stage + "TIMEOUT_ERROR");
+                }
                 return "TIMEOUT_ERROR";
             } else {
                 /*Any other possible error that may occur when using read function*/

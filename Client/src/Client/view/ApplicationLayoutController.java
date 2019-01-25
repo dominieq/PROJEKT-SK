@@ -93,7 +93,7 @@ public class ApplicationLayoutController implements Runnable {
         else if(ans.equals("TIMEOUT_ERROR")) {
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(1000);
             } catch (InterruptedException ignored) { }
 
         }
@@ -205,7 +205,6 @@ public class ApplicationLayoutController implements Runnable {
     @FXML public void handleAddSubButton(Tag tag) {
         String[] actions = {"snd", "rcv"};
         String[] messages = new String[2];
-        // Tag tag = this.subTableView.getSelectionModel().getSelectedItem();
         if (tag != null) {
             String name = tag.getNameProperty().get();
             messages[0] = "SUB_ADD;" + name + ";END";
@@ -238,7 +237,6 @@ public class ApplicationLayoutController implements Runnable {
 
         String[] actions = {"snd", "rcv"};
         String[] messages = new String[2];
-        // Tag tag = this.subUsersTableView.getSelectionModel().getSelectedItem();
         if(tag != null) {
             String name = tag.getNameProperty().get();
             messages[0] = "SUB_DEL;" + name + ";END";
@@ -297,6 +295,7 @@ public class ApplicationLayoutController implements Runnable {
      * @param publication object from commentTableView
      */
     private void showContent(Publication publication) {
+        this.commentTextFlow.getChildren().clear();
         if(publication != null) {
             Text content = new Text(publication.getContent());
             this.commentTextFlow.getChildren().addAll(content);
@@ -310,7 +309,7 @@ public class ApplicationLayoutController implements Runnable {
      * @param msg answer received from server
      */
     private void refreshTagList(String msg) {
-        if(msg.equals("TAG;;END")) {
+        if(msg.startsWith("TAG;;END")) {
             this.app.getTagObservableList().clear();
         } else {
             msg = msg.split("TAG;")[1];
@@ -329,7 +328,8 @@ public class ApplicationLayoutController implements Runnable {
      * @param usrTags answer received from server
      */
     private void refreshUserTagList(String usrTags) {
-        if(usrTags.equals("USR_TAG;;END")) {
+        this.app.getPublicationObservableList().clear();
+        if(usrTags.startsWith("USR_TAG;;END")) {
             this.app.getUserTagObservableList().clear();
             this.app.getChoiceBoxTagsObservableList().clear();
         } else {
@@ -377,7 +377,6 @@ public class ApplicationLayoutController implements Runnable {
     private void refreshPublicationList(String msg) {
 
         Publication pub = new Publication(msg);
-        this.app.getPublicationObservableList().clear();
         this.app.getPublicationObservableList().add(pub);
 
     }
