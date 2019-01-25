@@ -136,11 +136,14 @@ void Connection::s_write(string tresc) {
 
 void Connection::disable() {
     usuwanie.lock();
+    cout << "Lock" << endl;
     if (active) {
         active = false;
+        cout << "do usuniecie" << connection_socket_descriptor << endl;
         delete this;
     }
     usuwanie.unlock();
+    cout << "Unlock" << endl;
 }
 
 list<Connection *> Connection::get_connectionlist() {
