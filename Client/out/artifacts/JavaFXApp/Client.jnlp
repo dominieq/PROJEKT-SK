@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="JavaFXApp.jnlp">
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="Client.jnlp">
   <information>
     <title>JavaFXApp</title>
     <vendor>Unknown</vendor>
@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="JavaFXApp.jar" size="22230" download="eager" />
+    <jar href="Client.jar" size="23257" download="eager" />
   </resources>
   <jfx:javafx-desc  width="1200" height="900" main-class="Client.ClientApp"  name="JavaFXApp" />
   <update check="background"/>

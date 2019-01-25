@@ -14,7 +14,7 @@
       </options>
     </properties>
     <root id="root">
-      <element id="archive" name="JavaFXApp.jar">
+      <element id="archive" name="Client.jar">
         <element id="module-output" name="Client" />
       </element>
     </root>
