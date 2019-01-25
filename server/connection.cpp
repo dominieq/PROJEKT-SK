@@ -12,8 +12,8 @@ list<Connection *> Connection::connectionlist;
 mutex Connection::creating;
 
 Connection::Connection(int server_socket_descriptor) {
-    creating.lock();
     s_accept(server_socket_descriptor);
+    creating.lock();
     if (connectionlist.size() >= CONNECTIONS_LIMIT) {
         cout << "Nadmiarowy client." << endl;
         active = false;
@@ -28,6 +28,7 @@ Connection::Connection(int server_socket_descriptor) {
 }
 
 Connection::~Connection() {
+    creating.lock();
     for(auto it = connectionlist.begin(); it != connectionlist.end(); /*  */ ) {
         if (*it == this) {
             it = connectionlist.erase(it);
@@ -39,6 +40,7 @@ Connection::~Connection() {
 
     close(connection_socket_descriptor);
     cout << "OK: Zamknięcie połączenia csd: " << connection_socket_descriptor << endl;
+    creating.unlock();
 }
 
 void Connection::s_accept(int server_socket_descriptor) {
@@ -60,8 +62,6 @@ void Connection::s_read() {
     char znak[1];
     string s_ile, s_tresc;
 
-    cout << "start" << endl;
-
     try {
         while (active) {
             poczatek = true;
@@ -80,7 +80,6 @@ void Connection::s_read() {
                     } else {
                         s_ile+=znak[0];
                         if (s_ile.size() > to_string(MAX_SIZE).size()+1) {
-                            cout << "errr " << s_ile << " " << s_ile.size() << " " << to_string(MAX_SIZE).size() << endl;
                             throw runtime_error("spodziewana za długa wiadomość");
                         }
                     }
@@ -107,7 +106,7 @@ void Connection::s_read() {
             }
 
             s_tresc.append("\0");
-            cout << s_tresc << endl;
+            cout << "Odebrano od " << connection_socket_descriptor << " : " << s_tresc << endl;
             try {
                 Decipher::study(s_tresc, this);
             } catch (logic_error &e) {
@@ -131,7 +130,7 @@ void Connection::s_write(string tresc) {
     to_send += tresc;
     write(connection_socket_descriptor, to_send.c_str(), to_send.size());
 
-    cout << "Wysłano: " << to_send << endl; //TODO testowanie
+    cout << "Wysłano do " << connection_socket_descriptor << " : " << to_send << endl; //TODO testowanie
     send.unlock();
 }
 

@@ -46,10 +46,7 @@ void Decipher::a_join(string analiza, Connection *conn) {
 
 void Decipher::a_log(string analiza, Connection *conn) {
     string nick = next_l(analiza);
-    cout << nick << endl;
     string password = next_l(analiza);
-    cout << password << endl;
-    cout << analiza << endl;
     if (!last(analiza)) {
         conn->s_write("ERR_LOG;no END;END");
     } else {
