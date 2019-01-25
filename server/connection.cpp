@@ -84,7 +84,7 @@ void Connection::s_read() {
                         }
                     }
                 } else {
-                    throw runtime_error("zerwane polaczenie");
+                    throw runtime_error("zerwane polaczenie [poczatek]");
                 }
             }
 
@@ -101,7 +101,7 @@ void Connection::s_read() {
                         ile++;
                     }
                 } else {
-                    throw runtime_error("zerwane polaczenie");
+                    throw runtime_error("zerwane polaczenie [treść]");
                 }
             }
 
@@ -135,8 +135,12 @@ void Connection::s_write(string tresc) {
 }
 
 void Connection::disable() {
-    active = false;
-    delete this;
+    usuwanie.lock();
+    if (active) {
+        active = false;
+        delete this;
+    }
+    usuwanie.unlock();
 }
 
 list<Connection *> Connection::get_connectionlist() {
