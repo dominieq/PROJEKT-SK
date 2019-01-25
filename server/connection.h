@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define MAX_SIZE 50
+#define MAX_SIZE 5000
 #define CONNECTIONS_LIMIT 3
 
 class Connection {
