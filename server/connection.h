@@ -38,6 +38,11 @@ class Connection {
     mutex send;
 
     /**
+     * Mutex dla usuwania.
+     */
+    mutex usuwanie;
+
+    /**
      * Funkcja przyjmująca nowe połączenie.
      */
     void s_accept(int);
