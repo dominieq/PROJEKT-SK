@@ -137,6 +137,8 @@ void Connection::s_read() {
         cout << " COŚ INNEGO" << endl;
         this->disable();
     }
+
+    delete this;
 }
 
 void Connection::s_write(string tresc) {
@@ -152,15 +154,7 @@ void Connection::s_write(string tresc) {
 }
 
 void Connection::disable() {
-    usuwanie.lock();
-    cout << "Lock" << endl;
-    if (active && (connection_socket_descriptor > 0)) {
-        active = false;
-        cout << "do usuniecie" << connection_socket_descriptor << endl;
-        delete this;
-    }
-    usuwanie.unlock();
-    cout << "Unlock" << endl;
+    active = false;
 }
 
 list<Connection *> Connection::get_connectionlist() {
