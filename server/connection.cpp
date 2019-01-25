@@ -67,7 +67,7 @@ void Connection::s_write(string tresc) {
     write(connection_socket_descriptor, tresc.c_str(), tresc.size());
 
     cout << "Wysłano: " << tresc << endl; //TODO testowanie
-    sleep(2);
+//    sleep(2);
     send.unlock();
 }
 
