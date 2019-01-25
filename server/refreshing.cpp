@@ -6,11 +6,17 @@ string Refreshing::pubprepare(Publication *p) {
     pub.append("PUB;");
     pub.append(p->get_tag()->get_tagname());
     pub.append(";");
+    pub.append(to_string(p->get_title().size()));
+    pub.append(";");
     pub.append(p->get_title());
+    pub.append(";");
+    pub.append(to_string(p->get_author()->get_nick().size()));
     pub.append(";");
     pub.append(p->get_author()->get_nick());
     pub.append(";");
     pub.append(p->get_date_s());
+    pub.append(";");
+    pub.append(to_string(p->get_content().size()));
     pub.append(";");
     pub.append(p->get_content());
     pub.append(";END");
