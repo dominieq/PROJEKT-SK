@@ -8,25 +8,42 @@
 
 using namespace std;
 
-#define BUF_SIZE 1024
+#define MAX_SIZE 50
 #define CONNECTIONS_LIMIT 3
 
 class Connection {
+    /**
+     * File descriptor of the accepted socket.
+     */
     int connection_socket_descriptor;
-    char buffer [BUF_SIZE];
-//    int dlugosc;
-    ssize_t dlugosc;
 
+    /**
+     * Definiuje, pracę funkcji s_read().
+     */
     bool active;
+
+    /**
+     * Wskaźnik na podłączonego użytkownika.
+     */
     User *online;
+
+    /**
+     * Mutex dla konstruktora.
+     */
     static mutex creating;
+
+    /**
+     * Mutex dla wysyłania przez s_write(string).
+     */
     mutex send;
 
-
+    /**
+     * Funkcja przyjmująca nowe połączenie.
+     */
     void s_accept(int);
 
     /**
-     * statyczna lista zawierjąca wszystkie aktywne połączenia
+     * Statyczna lista zawierjąca wszystkie aktywne połączenia.
      */
     static list<Connection *> connectionlist;
 

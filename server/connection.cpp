@@ -4,6 +4,10 @@
 #include <sys/socket.h>
 #include <stdexcept>
 
+
+/*
+ * Inicjalizacja statycznych.
+ */
 list<Connection *> Connection::connectionlist;
 mutex Connection::creating;
 
@@ -51,33 +55,6 @@ int Connection::s_get_connection_socket_descriptor() {
 }
 
 void Connection::s_read() {
-//    while (active) {
-//        if((dlugosc = read(connection_socket_descriptor, buffer, BUF_SIZE)) > 0) {
-//            buffer[dlugosc] = '\0';
-//            cout << buffer << endl; //TODO testowanie
-//            Decipher::study(buffer, this);
-//        } else {
-//            cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << endl;
-//            this->disable();
-//        }
-//    }
-//
-
-    //--------------------
-//    string tresc;
-//    ssize_t pozycja = 0;
-//    bool poczatek = true;
-//    ssize_t to_read;
-//
-//    while (poczatek) {
-//        if ((read(connection_socket_descriptor, buffer, 1)) > 0) {
-//            if (to_string(buffer[++pozycja]) == ";") {
-//                !poczatek;
-//                to_read =
-//            }
-//        }
-//    }
-    //--------------------
     bool poczatek;
     ssize_t ile =  0;
     char znak[1];
@@ -92,7 +69,6 @@ void Connection::s_read() {
             while (poczatek) {
                 if (read(connection_socket_descriptor, znak, 1) > 0) {
                     if (znak[0] == ';') {
-                        s_ile.append("\0");
                         try {
                             ile = stoi(s_ile);
                         } catch (invalid_argument &e) {
@@ -103,16 +79,28 @@ void Connection::s_read() {
                         throw runtime_error("błąd w długości wiadomości");
                     } else {
                         s_ile+=znak[0];
+                        if (s_ile.size() > to_string(MAX_SIZE).size()+1) {
+                            cout << "errr " << s_ile << " " << s_ile.size() << " " << to_string(MAX_SIZE).size() << endl;
+                            throw runtime_error("spodziewana za długa wiadomość");
+                        }
                     }
                 } else {
                     throw runtime_error("zerwane polaczenie");
                 }
             }
 
+            if (ile > MAX_SIZE) {
+                throw runtime_error("za długa wiadomość");
+            }
+
             s_tresc.clear();
             while (ile--) {
                 if (read(connection_socket_descriptor, znak, 1) > 0) {
-                    s_tresc+=znak[0];
+                    if (znak[0] != '\n' && znak[0] != '\0') {
+                        s_tresc+=znak[0];
+                    } else {
+                        ile++;
+                    }
                 } else {
                     throw runtime_error("zerwane polaczenie");
                 }
@@ -133,15 +121,6 @@ void Connection::s_read() {
     } catch (...) {
         this->disable();
     }
-
-
-    /*
-     *
-                buffer[dlugosc] = '\0';
-                cout << buffer << endl; //TODO testowanie
-                Decipher::study(buffer, this);
-     */
-
 }
 
 void Connection::s_write(string tresc) {
@@ -153,7 +132,6 @@ void Connection::s_write(string tresc) {
     write(connection_socket_descriptor, to_send.c_str(), to_send.size());
 
     cout << "Wysłano: " << to_send << endl; //TODO testowanie
-//    sleep(2);
     send.unlock();
 }
 

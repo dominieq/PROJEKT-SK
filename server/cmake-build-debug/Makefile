@@ -312,33 +312,6 @@ tag.cpp.s:
 	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/tag.cpp.s
 .PHONY : tag.cpp.s
 
-testowanie.o: testowanie.cpp.o
-
-.PHONY : testowanie.o
-
-# target to build an object file
-testowanie.cpp.o:
-	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/testowanie.cpp.o
-.PHONY : testowanie.cpp.o
-
-testowanie.i: testowanie.cpp.i
-
-.PHONY : testowanie.i
-
-# target to preprocess a source file
-testowanie.cpp.i:
-	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/testowanie.cpp.i
-.PHONY : testowanie.cpp.i
-
-testowanie.s: testowanie.cpp.s
-
-.PHONY : testowanie.s
-
-# target to generate assembly for a file
-testowanie.cpp.s:
-	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/testowanie.cpp.s
-.PHONY : testowanie.cpp.s
-
 user.o: user.cpp.o
 
 .PHONY : user.o
@@ -423,9 +396,6 @@ help:
 	@echo "... tag.o"
 	@echo "... tag.i"
 	@echo "... tag.s"
-	@echo "... testowanie.o"
-	@echo "... testowanie.i"
-	@echo "... testowanie.s"
 	@echo "... user.o"
 	@echo "... user.i"
 	@echo "... user.s"

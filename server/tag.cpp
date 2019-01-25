@@ -1,5 +1,8 @@
 #include "tag.h"
 
+/*
+ * Inicjalizacja statycznych
+ */
 list<Tag *> Tag::taglist;
 mutex Tag::creating;
 

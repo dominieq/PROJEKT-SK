@@ -12,22 +12,22 @@ class Socket {
     struct sockaddr_in server_address;
 
     /**
-     * inicjacja
+     * Inicjalizacja.
      */
     void s_initiation();
 
     /**
-     * utworzenie gniazda
+     * Utworzenie gniazda.
      */
     void s_creation();
 
     /**
-     * dowiązanie / rejestracja usługi w systemie
+     * Dowiązanie / rejestracja usługi w systemie/
      */
     void s_link();
 
     /**
-     * nasłuchiwanie
+     * Nasłuchiwanie / utworzenie kolejki.
      */
     void s_listen();
 
