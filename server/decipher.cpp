@@ -94,7 +94,8 @@ void Decipher::a_sub_add(string analiza, Connection *conn) {
             conn->get_user()->add_sub(t);
             conn->s_write("ACK_SUB;" + tag + ";END");
             Refreshing::send_sublist(conn);
-            Refreshing::publishing(conn, t);
+//            Refreshing::publishing(conn, t);
+            Refreshing::publishing(conn);
         }
     }
 };
@@ -115,6 +116,7 @@ void Decipher::a_sub_del(string analiza, Connection *conn) {
             conn->get_user()->del_sub(t);
             conn->s_write("ACK_SUB;" + tag + ";END");
             Refreshing::send_sublist(conn);
+            Refreshing::publishing(conn);
         }
     }
 };
