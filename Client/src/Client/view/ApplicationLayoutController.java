@@ -59,8 +59,10 @@ public class ApplicationLayoutController implements Runnable {
      * Thread main function
      */
     @Override public void run() {
+        String[] actions = {"rcv"};
+        String[] messages = {"Thread: "};
         while(this.active) {
-            String ans = this.app.messageStation("rcv", "Thread: ");
+            String ans = this.app.messageStation(actions, messages);
             interpretAnswer(ans);
         }
     }
@@ -101,6 +103,9 @@ public class ApplicationLayoutController implements Runnable {
 
     }
 
+    /**
+     * TODO Javadoc
+     */
     private void earlyExit() {
         try {
             Thread.sleep(2000);
@@ -158,10 +163,12 @@ public class ApplicationLayoutController implements Runnable {
         if(tag != null) {
              tagName = tag.getNameProperty().get();
         }
-        String msg = "SEND;" + tagName + ";" + title + ";" + content + ";END";
-        this.app.messageStation("snd", msg);
+
+        String[] actions = {"snd", "rcv"};
+        String[] messages = {"SEND;" + tagName + ";" + title.length()+ ";" + title + ";"
+                + content.length() + ";" + content + ";END", "Submit button: "};
+        String ans =  this.app.messageStation(actions, messages);
         this.userWarningLabel.setVisible(false);
-        String ans =  this.app.messageStation("rcv", "Submit button: ");
 
         if(ans.startsWith("ACK_SEND;")) {
             this.userTitleTextField.clear();
@@ -195,18 +202,20 @@ public class ApplicationLayoutController implements Runnable {
      *     "ERR_SUB;T;<error>;END" which means an error occurred. Error is displayed.
      * Calls handleSubMessages to interpret other answers
      */
-    @FXML public void handleAddSubButton() {
-
-        Tag tag = this.subTableView.getSelectionModel().getSelectedItem();
+    @FXML public void handleAddSubButton(Tag tag) {
+        String[] actions = {"snd", "rcv"};
+        String[] messages = new String[2];
+        // Tag tag = this.subTableView.getSelectionModel().getSelectedItem();
         if (tag != null) {
             String name = tag.getNameProperty().get();
-            this.app.messageStation("snd", "SUB_ADD;" + name + ";END");
+            messages[0] = "SUB_ADD;" + name + ";END";
         }
         else {
-            this.app.messageStation("snd", "SUB_ADD;;END");
+            messages[0] = "SUB_ADD;;END";
         }
+        messages[1] = "Add sub button: ";
         this.subWarningLabel.setVisible(false);
-        String ans = this.app.messageStation("rcv", "Add sub button: ");
+        String ans = this.app.messageStation(actions, messages);
         if(ans.startsWith("ACK_SUB;") && tag != null) {
             tag.getButton().setDisable(true);
             tag.getButton().setVisible(false);
@@ -225,18 +234,21 @@ public class ApplicationLayoutController implements Runnable {
      *     "ERR_SUB;<error>;END" which means an error occurred. Error is displayed.
      * Calls handleSubMessages to interpret other answers
      */
-    @FXML public void handleDiscardSubButton() {
+    @FXML public void handleDiscardSubButton(Tag tag) {
 
-        Tag tag = this.subUsersTableView.getSelectionModel().getSelectedItem();
+        String[] actions = {"snd", "rcv"};
+        String[] messages = new String[2];
+        // Tag tag = this.subUsersTableView.getSelectionModel().getSelectedItem();
         if(tag != null) {
             String name = tag.getNameProperty().get();
-            this.app.messageStation("snd", "SUB_DEL;" + name + ";END");
+            messages[0] = "SUB_DEL;" + name + ";END";
         }
         else {
-            this.app.messageStation("snd", "SUB_DEL;;END");
+            messages[0] = "SUB_DEL;;END";
         }
+        messages[1] = "Discard sub button: ";
         this.subWarningLabel.setVisible(false);
-        String ans = this.app.messageStation("rcv", "Discard sub button: ");
+        String ans = this.app.messageStation(actions, messages);
         if(ans.startsWith("ACK_SUB;") && tag != null) {
 
             String name = ans.split(";")[1];
@@ -363,19 +375,11 @@ public class ApplicationLayoutController implements Runnable {
      * @param msg answer received from server
      */
     private void refreshPublicationList(String msg) {
-        msg = msg.split("PUB;")[1];
-        msg = msg.split(";END")[0];
-        String[] publication = msg.split(";NEXT");
-        ArrayList<Publication> publicationArrayList = new ArrayList<>();
-        for (String pub : publication) {
-            String[] parts = pub.split(";");
 
-            if(parts.length == 5) {
-                publicationArrayList.add(new Publication(parts[0], parts[1], parts[2], parts[3], parts[4]));
-            }
-        }
+        Publication pub = new Publication(msg);
         this.app.getPublicationObservableList().clear();
-        this.app.getPublicationObservableList().addAll(publicationArrayList);
+        this.app.getPublicationObservableList().add(pub);
+
     }
 
     /**

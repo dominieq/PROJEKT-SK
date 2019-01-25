@@ -146,23 +146,41 @@ public class ClientApp extends Application {
 
     private String receiveMessage(String stage) {
 
-        String msg;
         byte[] buffer = new byte[5000];
+        String ans = "";
+        int msgLen;
+
         try {
 
             InputStream is = this.clientSocket.getInputStream();
-            if(is.read(buffer) == -1) {
-                throw new IOException();
+
+            for(int i = 0; i < 5000; i++) {
+                msgLen = is.read(buffer, 0, 1);
+                if (msgLen != -1) {
+                    String letter = new String(buffer);
+                    if (!letter.startsWith(";")) {
+                        ans = ans + letter.charAt(0);
+                    }
+                    else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            msgLen = is.read(buffer, 0, Integer.valueOf(ans));
+            if(msgLen != -1) {
+                ans = new String(buffer);
+                System.out.println(stage + ans);
             }
 
         } catch (IOException exception) {
 
-            if(exception instanceof SocketTimeoutException) {
+            if (exception instanceof SocketTimeoutException) {
                 /*Timeout was exceeded and read function didn't receive any message*/
                 System.out.println(stage + "TIMEOUT_ERROR");
                 return "TIMEOUT_ERROR";
-            }
-            else {
+            } else {
                 /*Any other possible error that may occur when using read function*/
                 System.out.println(stage + "READ_ERROR");
                 this.clientSocket = null;
@@ -170,20 +188,17 @@ public class ClientApp extends Application {
             }
 
         }
-        msg = new String(buffer);
-        System.out.println(stage + msg);
 
-        String[] parts = msg.split(";END");
-        msg = parts[0] + ";END";
-        return msg;
+        return ans;
     }
 
     private void sendMessage(String msg) {
 
         try {
             OutputStream os = this.clientSocket.getOutputStream();
-            System.out.println("Sending: " + msg);
+            msg = msg.length() + ";" + msg;
             os.write(msg.getBytes());
+            System.out.println("Sent: " + msg);
         } catch (IOException ignored) {
             System.out.println("Sending failed msg = " + msg);
         }
