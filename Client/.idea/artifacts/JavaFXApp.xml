@@ -1,9 +1,9 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="JavaFXApp">
+  <artifact type="javafx" build-on-make="true" name="JavaFXApp">
     <output-path>$PROJECT_DIR$/out/artifacts/JavaFXApp</output-path>
     <properties id="javafx-properties">
       <options>
-        <option name="appClass" value="Client.ClientApp" />
+        <option name="appClass" value="ClientApp.class" />
         <option name="description" value="" />
         <option name="height" value="900" />
         <option name="htmlPlaceholderId" value="" />
@@ -14,7 +14,7 @@
       </options>
     </properties>
     <root id="root">
-      <element id="archive" name="JavaFXApp.jar">
+      <element id="archive" name="Client.jar">
         <element id="module-output" name="Client" />
       </element>
     </root>

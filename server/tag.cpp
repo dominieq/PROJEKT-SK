@@ -1,8 +1,13 @@
 #include "tag.h"
 
+/*
+ * Inicjalizacja statycznych
+ */
 list<Tag *> Tag::taglist;
+mutex Tag::creating;
 
 Tag::Tag(string name) {
+    creating.lock();
     bool nowy = true;
     for (auto *v : taglist) {
         if (v->get_tagname() == name) {
@@ -16,6 +21,7 @@ Tag::Tag(string name) {
     } else {
         delete this;
     }
+    creating.unlock();
 }
 
 string Tag::get_tagname() {

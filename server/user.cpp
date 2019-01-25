@@ -1,6 +1,10 @@
 #include "user.h"
 
+/*
+ * Inicjalizacja statycznych.
+ */
 list<User *> User::userlist;
+mutex User::creating;
 
 /**
  * Funkcja używana przy oczyszczaniu listy tagów z powtarzających się pozycji,
@@ -25,6 +29,7 @@ bool order (Tag *first, Tag *second) {
 }
 
 User::User(string n, string p) {
+    creating.lock();
     bool nowy = true;
     for (auto *v : userlist) {
         if (v->get_nick() == n) {
@@ -33,12 +38,13 @@ User::User(string n, string p) {
         }
     }
     if (nowy) {
-        nick = n;
-        password = p;
+        nick = move(n);
+        password = move(p);
         userlist.push_back(this);
     } else {
         delete this;
     }
+    creating.unlock();
 }
 
 string User::get_nick() {
@@ -46,11 +52,7 @@ string User::get_nick() {
 }
 
 bool User::check_password(string p) {
-    if (password == p) {
-        return true;
-    } else {
-        return false;
-    }
+    return password == p;
 }
 
 list<Tag *> User::get_sublist() {

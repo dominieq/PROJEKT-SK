@@ -19,16 +19,16 @@ public class Tag {
 
         this.name = name;
 
-        this.button = new Button(buttonText);
+        this.button = new Button(buttonText + " " + name);
         if(buttonText.equals("Subscribe")) {
             this.button.setDefaultButton(true);
             this.button.setOnAction(
-                    event -> this.app.getApplicationLayoutController().handleAddSubButton());
+                    event -> this.app.getApplicationLayoutController().handleAddSubButton(this));
         }
         else if(buttonText.equals("Unsubscribe")) {
             this.button.setCancelButton(true);
             this.button.setOnAction(
-                    event -> this.app.getApplicationLayoutController().handleDiscardSubButton());
+                    event -> this.app.getApplicationLayoutController().handleDiscardSubButton(this));
         }
 
     }

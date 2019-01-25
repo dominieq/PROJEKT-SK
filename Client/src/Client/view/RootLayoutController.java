@@ -84,11 +84,17 @@ public class RootLayoutController {
      */
     private Boolean logOut() {
 
-        this.app.sendMessage("TERM;END");
-        String ans = this.app.receiveMessage();
+        String[] actions = {"snd", "rcv"};
+        String[] messages = {"TERM;END", "Logging out: "};
 
-        if (ans.startsWith("ACK_TERM")) {
+        String ans = this.app.messageStation(actions, messages);
 
+        if (ans.startsWith("ACK_TERM;")) {
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
             /*Server acknowledged our request and we can exit application*/
             if (!endApplicationLayoutControllerThread()) {
                 String title = "Thread error!";
@@ -97,11 +103,10 @@ public class RootLayoutController {
                 return false;
             }
 
-        } else if (ans.startsWith("ERR_TERM")) {
+        } else if (ans.startsWith("ERR_TERM;")) {
 
-            String[] parts = ans.split(";");
             String title = "Server error!";
-            String error = parts[1];
+            String error = ans.split(";")[1];
             this.app.showError(title, error);
             return false;
 

@@ -41,7 +41,7 @@ void Socket::s_creation() {
 
 void Socket::s_link() {
     setsockopt(server_socket_descriptor, SOL_SOCKET, SO_REUSEADDR,
-               (char*)&reuse_addr_val, sizeof(reuse_addr_val));
+               &reuse_addr_val, sizeof(reuse_addr_val));
     bind_result = bind(server_socket_descriptor, (struct sockaddr*)&server_address,
                        sizeof(struct sockaddr));
     if (bind_result < 0) {

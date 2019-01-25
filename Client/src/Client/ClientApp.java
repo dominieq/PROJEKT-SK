@@ -29,11 +29,12 @@ public class ClientApp extends Application {
     private RootLayoutController rootLayoutController;
     private ApplicationLayoutController applicationLayoutController;
     private Thread appThread;
-    private volatile Socket clientSocket;
+    private Socket clientSocket;
     private Boolean clearToCloseBoolean;
-    private ObservableList<Tag> tagObservableList;
-    private ObservableList<Tag> userTagObservableList;
-    private ObservableList<Publication> publicationObservableList;
+    private volatile ObservableList<Tag> tagObservableList;
+    private volatile ObservableList<Tag> userTagObservableList;
+    private volatile ObservableList<Tag> choiceBoxTagsObservableList;
+    private volatile ObservableList<Publication> publicationObservableList;
 
     @Override public void start(Stage primaryStage) {
 
@@ -44,7 +45,7 @@ public class ClientApp extends Application {
 
     }
 
-    public void initRootLayout() {
+    private void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ClientApp.class.getResource("view/RootLayout.fxml"));
@@ -60,6 +61,7 @@ public class ClientApp extends Application {
             this.tagObservableList = FXCollections.observableArrayList();
             this.userTagObservableList = FXCollections.observableArrayList();
             this.publicationObservableList = FXCollections.observableArrayList();
+            this.choiceBoxTagsObservableList = FXCollections.observableArrayList();
 
             primaryStage.show();
         } catch (IOException exception) {
@@ -77,7 +79,6 @@ public class ClientApp extends Application {
 
             WelcomePageLayoutController controller = loader.getController();
             controller.setApp(this);
-            controller.setUp();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -93,7 +94,6 @@ public class ClientApp extends Application {
 
             LogInLayoutController controller = loader.getController();
             controller.setApp(this);
-            controller.setUp();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -128,47 +128,82 @@ public class ClientApp extends Application {
     }
 
 
-    public synchronized String receiveMessage() {
+    public synchronized String messageStation(String[] actions, String[] msgs) {
+        String ans = "";
+        for (int i = 0; i < actions.length; i++) {
 
-        // TODO
-        // Function should manage incomplete messages
-        // Receives wrong messages
+            if(actions[i].equals("snd")) {
+                sendMessage(msgs[i]);
+            }
+            else if(actions[i].equals("rcv")){
+                ans = receiveMessage(msgs[i]);
+            }
 
-        String msg;
+        }
+
+        return ans;
+    }
+
+    private String receiveMessage(String stage) {
+
         byte[] buffer = new byte[5000];
+        String ans = "";
+        int msgLen;
+
         try {
 
             InputStream is = this.clientSocket.getInputStream();
-            is.read(buffer);
+
+            for(int i = 0; i < 5000; i++) {
+                msgLen = is.read(buffer, 0, 1);
+                if (msgLen != -1) {
+                    String letter = new String(buffer);
+                    if (!letter.startsWith(";")) {
+                        ans = ans + letter.charAt(0);
+                    }
+                    else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            msgLen = is.read(buffer, 0, Integer.valueOf(ans));
+            if(msgLen != -1) {
+                ans = new String(buffer);
+                System.out.println(stage + ans);
+            }
 
         } catch (IOException exception) {
 
-            if(exception instanceof SocketTimeoutException) {
+            if (exception instanceof SocketTimeoutException) {
                 /*Timeout was exceeded and read function didn't receive any message*/
+                if(!stage.startsWith("Thread")) {
+                    System.out.println(stage + "TIMEOUT_ERROR");
+                }
                 return "TIMEOUT_ERROR";
-            }
-            else {
+            } else {
                 /*Any other possible error that may occur when using read function*/
+                System.out.println(stage + "READ_ERROR");
+                this.clientSocket = null;
                 return "READ_ERROR";
             }
 
         }
-        msg = new String(buffer);
-        String[] parts = msg.split(";END");
-        msg = parts[0] + ";END";
-        return msg;
+
+        return ans;
     }
 
-    public synchronized Boolean sendMessage(String msg) {
+    private void sendMessage(String msg) {
 
         try {
             OutputStream os = this.clientSocket.getOutputStream();
+            msg = msg.length() + ";" + msg;
             os.write(msg.getBytes());
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            return false;
+            System.out.println("Sent: " + msg);
+        } catch (IOException ignored) {
+            System.out.println("Sending failed msg = " + msg);
         }
-        return true;
 
     }
 
@@ -227,12 +262,15 @@ public class ClientApp extends Application {
         return tagObservableList;
     }
 
+    public ObservableList<Tag> getUserTagObservableList() {
+        return userTagObservableList;
+    }
+
+    public ObservableList<Tag> getChoiceBoxTagsObservableList() {
+        return choiceBoxTagsObservableList;
+    }
 
     public ObservableList<Publication> getPublicationObservableList() {
         return publicationObservableList;
-    }
-
-    public ObservableList<Tag> getUserTagObservableList() {
-        return userTagObservableList;
     }
 }

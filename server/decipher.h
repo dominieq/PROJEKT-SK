@@ -11,20 +11,60 @@ using namespace std;
 
 class Decipher {
 
-public: //TODO
-    static string part(string, unsigned int);
+    /**
+     * Funkcja odcina nastepne pole komunikatu i zwraca je.
+     * Oryginalny string ulega zmianie.
+     * @return następne pole komunikatu
+     */
+    static string next(string &);
+
+    /**
+     * Funkcja odcina nastepne pole komunikatu o okreslonej długości i zwraca je.
+     * Oryginalny string ulega zmianie.
+     * @return następne pole komunikatu
+     */
+    static string next_l(string &);
+
+    /**
+     * Sprawdza poprawność zakończenia komunikatu.
+     * @return 1 = prawidłowy koniec; else 0
+     */
+    static bool last(string &);
+
+    /**
+     * Pirwszy komunikat przesłany przez klienta do serwera; służy synchronizacji pracy.
+     */
     static void a_join(string, Connection *);
-    static void a_join_new(string, Connection *);
-    static void a_join_old(string, Connection *);
-    static void a_ack_tag(string, Connection *);
-    static void a_ack_pub(string, Connection *);
-    static void a_err_tag(string, Connection *);
-    static void a_err_pub(string, Connection *);
-    static void a_sub(string, Connection *);
-    static void a_send_pub(string, Connection *);
+
+    /**
+     * Logowanie i rejestracja użytkownika (w zależności, czy użytkownik o danje nazwie już istnieje).
+     */
+    static void a_log(string, Connection *);
+
+    /**
+     * Dodanie tagu do subskrybowanych.
+     */
+    static void a_sub_add(string, Connection *);
+
+    /**
+     * Usunięcie tagu ze subskrybowanych.
+     */
+    static void a_sub_del(string, Connection *);
+
+    /**
+     * Wysłanie publikacji przez użytkownika.
+     */
+    static void a_send(string, Connection *);
+
+    /**
+     * Prośba o zakończnie pracy przez użytkownika.
+     */
     static void a_term(string, Connection *);
 
 public:
+    /**
+     * Dokonuje analizy składni komunikatu i wywyłuje odpowiednie metody.
+     */
     static void study(string, Connection *);
 };
 

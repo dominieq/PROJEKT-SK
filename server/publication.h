@@ -4,17 +4,42 @@
 
 #include <iostream>
 #include <list>
+#include <mutex>
 #include "tag.h"
 #include "user.h"
 
 using namespace std;
 
 class Publication {
+    /**
+     * Wskaźnik na tag publikacji.
+     */
     Tag *tag;
+
+    /**
+     * Tytuł publikacji.
+     */
     string title;
+
+    /**
+     * Wskaźnik na użytkownika (autora) publikacji.
+     */
     User *author;
+
+    /**
+     * Data utworenia publikacji.
+     */
     time_t date;
+
+    /**
+     * Treść publikacji
+     */
     string content;
+
+    /**
+     * Mutex na tworzenie nowych obiektów klasy Publication.
+     */
+    static mutex creating;
 
     /**
      * statyczna lista zawierająca wszystkie publikacje
@@ -60,7 +85,10 @@ public:
      */
     static list<Publication *> get_publicationlist();
 
-    //TODO
+    /**
+     * Zwraca statyczną listę wskaźników na wszystkie dostępne publikacjie.
+     * @return lista dostępnych publikacji
+     */
     static list<Publication *> get_publicationlist(Tag *);
 
 };
