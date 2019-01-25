@@ -84,8 +84,16 @@ void Connection::s_read() {
                         }
                     }
                 } else {
-                    throw runtime_error("zerwane polaczenie [poczatek]");
+                    if (active) {
+                        throw runtime_error("zerwane polaczenie [poczatek]");
+                    } else {
+                        break;
+                    }
                 }
+            }
+
+            if (!active) {
+                break;
             }
 
             if (ile > MAX_SIZE) {
@@ -101,8 +109,16 @@ void Connection::s_read() {
                         ile++;
                     }
                 } else {
-                    throw runtime_error("zerwane polaczenie [treść]");
+                    if (active) {
+                        throw runtime_error("zerwane polaczenie [treść]");
+                    } else {
+                        break;
+                    }
                 }
+            }
+
+            if (!active) {
+                break;
             }
 
             s_tresc.append("\0");
@@ -138,7 +154,7 @@ void Connection::s_write(string tresc) {
 void Connection::disable() {
     usuwanie.lock();
     cout << "Lock" << endl;
-    if (active && connection_socket_descriptor > 0) {
+    if (active && (connection_socket_descriptor > 0)) {
         active = false;
         cout << "do usuniecie" << connection_socket_descriptor << endl;
         delete this;
