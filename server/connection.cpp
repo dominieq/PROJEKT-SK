@@ -118,6 +118,7 @@ void Connection::s_read() {
         cout << "!!: Klient zerwał połączenie. csd: " << this->s_get_connection_socket_descriptor() << " powód: " << e.what() << endl;
         this->disable();
     } catch (...) {
+        cout << " COŚ INNEGO" << endl;
         this->disable();
     }
 }
@@ -137,7 +138,7 @@ void Connection::s_write(string tresc) {
 void Connection::disable() {
     usuwanie.lock();
     cout << "Lock" << endl;
-    if (active) {
+    if (active && connection_socket_descriptor > 0) {
         active = false;
         cout << "do usuniecie" << connection_socket_descriptor << endl;
         delete this;
