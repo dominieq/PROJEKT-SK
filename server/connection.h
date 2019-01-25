@@ -9,6 +9,7 @@
 using namespace std;
 
 #define BUF_SIZE 1024
+#define CONNECTIONS_LIMIT 3
 
 class Connection {
     int connection_socket_descriptor;
@@ -18,6 +19,7 @@ class Connection {
 
     bool active;
     User *online;
+    static mutex creating;
     mutex send;
 
 
@@ -29,7 +31,7 @@ class Connection {
     static list<Connection *> connectionlist;
 
 public:
-    Connection(int);
+    explicit Connection(int);
 
     ~Connection();
 
@@ -49,7 +51,9 @@ public:
      */
     void s_write(string);
 
-    //TODO nazwa i opisy
+    /**
+     * Wyłącznie działania połączenia.
+     */
     void disable();
 
     /**

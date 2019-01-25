@@ -1,6 +1,7 @@
 #include "user.h"
 
 list<User *> User::userlist;
+mutex User::creating;
 
 /**
  * Funkcja używana przy oczyszczaniu listy tagów z powtarzających się pozycji,
@@ -25,6 +26,7 @@ bool order (Tag *first, Tag *second) {
 }
 
 User::User(string n, string p) {
+    creating.lock();
     bool nowy = true;
     for (auto *v : userlist) {
         if (v->get_nick() == n) {
@@ -39,6 +41,7 @@ User::User(string n, string p) {
     } else {
         delete this;
     }
+    creating.unlock();
 }
 
 string User::get_nick() {

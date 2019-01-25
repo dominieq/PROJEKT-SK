@@ -2,8 +2,10 @@
 #include <utility>
 
 list<Publication *> Publication::publicationlist;
+mutex Publication::creating;
 
 Publication::Publication(Tag *t, string s, User *u, string c) {
+    creating.lock();
     tag = t;
     title = move(s);
     author = u;
@@ -11,6 +13,7 @@ Publication::Publication(Tag *t, string s, User *u, string c) {
     content = move(c);
 
     publicationlist.push_back(this);
+    creating.unlock();
 }
 
 Tag *Publication::get_tag() {

@@ -3,19 +3,25 @@
 
 #include <iostream>
 #include <list>
+#include <mutex>
 
 using namespace std;
 
 class Tag {
     /**
-     * nazwa tagu
+     * Nazwa tagu.
      */
     string tagname;
 
     /**
-     * statyczna lista zawierjąca wszystkie utworzone tagi
+     * Statyczna lista zawierjąca wszystkie utworzone tagi.
      */
     static list<Tag *> taglist;
+
+    /**
+     * Mutex na tworzenie nowych obiektów klasy Tag.
+     */
+    static mutex creating;
 
 public:
     explicit Tag(string);
@@ -27,7 +33,7 @@ public:
     string get_tagname();
 
     /**
-     * Zwraca statyczną listę wskaźników na wszystkich dostepnych tagów.
+     * Zwraca statyczną listę wskaźników na wszystkie dostepne tagi.
      * @return lista dostępnych tagów
      */
     static list<Tag *> get_taglist();
