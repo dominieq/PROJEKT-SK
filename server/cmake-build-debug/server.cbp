@@ -123,12 +123,6 @@
 		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/tag.h">
 			<Option target="server"/>
 		</Unit>
-		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/testowanie.cpp">
-			<Option target="server"/>
-		</Unit>
-		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/testowanie.h">
-			<Option target="server"/>
-		</Unit>
 		<Unit filename="/home/wojciech/Dokumenty/PROJEKT-SK/server/user.cpp">
 			<Option target="server"/>
 		</Unit>

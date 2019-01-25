@@ -1,5 +1,8 @@
 #include "user.h"
 
+/*
+ * Inicjalizacja statycznych.
+ */
 list<User *> User::userlist;
 mutex User::creating;
 

@@ -1,14 +1,15 @@
 #include "working.h"
 #include "socket.h"
 #include "connection.h"
-#include "testowanie.h"
-//#include "refreshing.h"
 #include <iostream>
 
 using namespace std;
 
+/*
+ * Inicjalizacja statycznych.
+ */
 static Socket *server_socket;
-bool Working::active = true; //TODO work?
+bool Working::active = true;
 
 void Working::launch(int argc, char* argv[]) {
     cout << "----------" << " START " << "----------" << endl;
@@ -21,9 +22,7 @@ void Working::launch(int argc, char* argv[]) {
 }
 
 void Working::operation() {
-    thread t_init(Working::initialization);
-
-    t_init.detach();
+    Working::initialization();
 
     thread t_heeding(Working::heeding);
 
@@ -62,5 +61,4 @@ void Working::initialization() {
     new Tag("cats");
     new Tag("dogs");
     
-//    Testowanie::test();
 }

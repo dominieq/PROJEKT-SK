@@ -1,6 +1,9 @@
 #include "publication.h"
 #include <utility>
 
+/*
+ * Inicjalizacja statycznych.
+ */
 list<Publication *> Publication::publicationlist;
 mutex Publication::creating;
 
