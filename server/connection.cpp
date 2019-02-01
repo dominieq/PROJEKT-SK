@@ -17,7 +17,6 @@ Connection::Connection(int server_socket_descriptor) {
     if (connectionlist.size() >= CONNECTIONS_LIMIT) {
         cout << "Nadmiarowy client." << endl;
         active = false;
-        delete this;
     } else {
         active = true;
         connectionlist.push_back(this);
