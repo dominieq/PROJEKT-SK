@@ -1,3 +1,8 @@
 Manifest-Version: 1.0
+Implementation-Title: ClientApp
+Implementation-Version: 1.0
+JavaFX-Version: 8.0
+Created-By: Dominik Szmyt
+Implementation-Vendor: Dominik Szmyt
 Main-Class: Client.ClientApp
 
