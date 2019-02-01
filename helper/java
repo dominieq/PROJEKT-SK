@@ -1,0 +1,12 @@
+1) java z javafx - inaczej pobrać jdk1.8.0_201
+3) folder "src" projektu
+4) kompilacja:
+    [ścieżka jeśli potrzebna/]javac -cp <ścieżka do classpath> [ścieżka do pliku/]<nazwa pliku>.java
+5) uruchomienie:
+    [ścieżka jeśli potrzebna/]java <paczka klasy, bez ścieżki>
+
+6) aby utworzyć jar:
+    [ścieżka jeśli potrzebna/]jar cmvf <ścieżka do MANIFEST.MF> <nazwa>.jar <ścieżka do plików>
+
+
+

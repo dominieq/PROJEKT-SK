@@ -1,0 +1,19 @@
+#!/bin/bash
+echo 'Skrypt tworzący jar dla Clienta z PROJEKT-SK'
+if [[ -n "$1" ]]
+then
+	if [[ "$1" == */ ]]
+	then
+		path=$1
+	else
+		echo "ścieżka musi się zakończyć /"
+	fi
+fi
+
+echo "Kompilacja"
+${path}javac -cp . Client/ClientApp.java
+
+echo "Utworzenie jar"
+${path}jar cmf META-INF/MANIFEST.MF client.jar .
+
+echo "Uruchamianie za pomocą 'java -jar client.jar'"
